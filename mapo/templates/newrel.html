@@ -1,0 +1,34 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"> 
+<head> 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>New Relation Form</title>
+</head>
+<body>
+	<form name="nf_" method="POST">
+		<h4>Source</h4>
+		<select name="s">
+		{% for i in elems %}
+		<option value="{{ i.id }}">{{i}}</option>
+		{% endfor %}
+		</select>
+		
+		<h4>Target</h4>
+		<select name="t">
+		{% for i in elems %}
+		<option value="{{ i.id }}">{{i}}</option>
+		{% endfor %}
+		</select>
+		<h4>Cardinality</h4>
+		<select name="c">
+			<option value="N">North</option>
+			<option value="E">East</option>
+			<option value="S">South</option>
+			<option value="W">West</option>
+		<select>
+		<div>
+		<input type="submit" />
+		</div>
+	</form>
+</body>
+</html>

@@ -1,0 +1,19 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"> 
+<head> 
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>New Element Form</title>
+</head>
+<body>
+{% for f in form %}
+	<form name="nf_{{ f.t }}" method="POST" enctype="{{ f.enc }}">
+		<input type="hidden" name="t" value="{{ f.t }}">
+		<h4>{{ f.t }}</h4>
+		{% for i in f.i %}
+		{{ i.1 }}: <input type="{{ i.0 }}" name="{{ i.1 }}" />
+		{% endfor %}
+		<input type="submit" />
+	</form>
+{% endfor %}
+</body>
+</html>
