@@ -63,8 +63,9 @@ def rel(request, elem):
 		raise Http404
 	
 	r = []
-	for re in el.relation.all().filter(source=el.id):
-		r.append({'t':re.target, 'c':re.cardinal})
+	sel = el.source.all()
+	for re in sel:
+		r.append({'t':re.target_id, 'c':re.cardinal})
 		
 	return HttpResponse(json.dumps(r), mimetype='application/json')
 	
