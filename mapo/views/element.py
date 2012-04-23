@@ -36,7 +36,7 @@ class SrcExtractor(object):
 		
 	def location(self, el):
 		z = 16
-		x,y = tileXY(float(el.location.lon), float(el.location.lat), z)
+		x,y = tileXY(float(el.location.lat), float(el.location.lon), z)
 		url = tileURL(x,y,z, 'mapquest')
 		return {'src' : url}
 		
@@ -50,6 +50,7 @@ def e(request, elem):
 		raise Http404
 	
 	r = {}
+	r['id'] = elem
 	r['type'] = el.etype
 	m = getattr(SrcExtractor(), el.etype)
 	r['src'] = m(el)['src']
@@ -65,7 +66,7 @@ def rel(request, elem):
 	r = []
 	sel = el.source.all()
 	for re in sel:
-		r.append({'t':re.target_id, 'c':re.cardinal})
+		r.append({'id':re.target_id, 'cardinal':re.cardinal, 'type':re.target.etype})
 		
 	return HttpResponse(json.dumps(r), mimetype='application/json')
 	

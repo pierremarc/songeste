@@ -72,8 +72,7 @@ def tileLayerExt(layer):
 
 def tileLayerBase(layer):
   layers = { \
-    "tah": "http://cassini.toolserver.org:8080/http://a.tile.openstreetmap.org/+http://toolserver.org/~cmarqu/hill/",
-	#"tah": "http://tah.openstreetmap.org/Tiles/tile/",
+    "osm": "http://tile.openstreetmap.org/",
     "oam": "http://oam1.hypercube.telascience.org/tiles/1.0.0/openaerialmap-900913/",
     "mapnik": "http://tile.openstreetmap.org/mapnik/",
     'mapquest' : ''.join(['http://otile', str(random.choice([1,2,3,4])) ,'.mqcdn.com/tiles/1.0.0/osm/'])
