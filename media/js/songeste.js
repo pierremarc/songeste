@@ -51,8 +51,8 @@ Son.Element = function(id, level, parent, relation)
 	console.log('Element: '+id);
 	this.id = id;
 	this.level = level;
-	this.parent = (level > 0) ? parent : null;
-	this.relation = (level > 0) ? relation : null;
+	this.parent = (level > 1) ? parent : null;
+	this.relation = (level > 1) ? relation : null;
 	this.children = new Array();
 	
 	this._src = null;
@@ -127,8 +127,8 @@ Son.Element.prototype.show = function()
 		var bbp = this.parent._raster.bounds;
 		var deltaX = 0;
 		var deltaY = 0;
-		var unitVer = bbp.height;
-		var unitHor = bbp.width;
+		var unitVer = bbp.height *(1/this.level);
+		var unitHor = bbp.width *(1/this.level);
 		if(this.relation == 'N')
 			deltaY = -unitVer;
 		else if(this.relation == 'E')
@@ -138,9 +138,11 @@ Son.Element.prototype.show = function()
 		else if(this.relation == 'W')
 			deltaX = -unitHor;
 		var p = new paper.Point(bbp.center.x + deltaX, bbp.center.y + deltaY);
-		this._raster.bounds.center = p;
+		var r = new paper.Rectangle(this.parent._raster.bounds);
+		
+		this._raster.bounds.setCenter(p);
 		this._raster.bounds.scale(1/this.level);
-		console.log('SHOW('+this.id+', '+this.relation+') => '+this._raster.bounds);
+		console.log('SHOW('+this.id+', '+this.relation+') => '+this._raster.bounds.center);
 	}
 	else
 	{
@@ -158,7 +160,7 @@ Son.Element.prototype.media_play = function()
 		return;
 	}
 	// check if there's another media playing, and stop it
-	var elems = Son.RC.getdData();
+	var elems = Son.RC.getData();
 	for(var i = 0; i < elems.length; i++)
 	{
 		if(elems[i]._media_playing)
@@ -182,11 +184,13 @@ Son.Element.prototype.media_pause = function()
 }
 Son.Element.prototype.media_animate = function()
 {
-	for(var i = 0; i < son_resource_array.length; i++)
+	var elems = Son.RC.getData();
+	for(var i = 0; i < elems.length; i++)
 	{
-		if(son_resource_array[i].type == 'audio' &&  son_resource_array[i].playing)
+		if(elems[i]._media_playing)
 		{
-			son_resource_array[i].raster.rotate(3);
+			elems[i]._raster.rotate(3);
+			break; // should work
 		}
 	}
 }
@@ -239,7 +243,7 @@ function son_init_jplayer()
 		swfPath: jplayerswf,
 		errorAlerts: false,
 		warningAlerts: false,
-// 		ready: function(){Son.player_ready = true;},
+		ready: function(){Son.player_ready = true;},
 // 		pause:function(e)
 // 		{
 // 			for(var i = 0; i < son_resource_array.length; i++)
@@ -269,7 +273,7 @@ function son_init()
 			if(elem)
 				elem.show();
 		});
-		new Son.Element(d[ridx].id, 0);
+		new Son.Element(d[ridx].id, 1);
 	});
 }
 
