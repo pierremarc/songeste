@@ -127,8 +127,10 @@ Son.Element.prototype.show = function()
 		var bbp = this.parent._raster.bounds;
 		var deltaX = 0;
 		var deltaY = 0;
-		var unitVer = bbp.height *(1/this.level);
-		var unitHor = bbp.width *(1/this.level);
+		var iSize = this._raster.size;
+		var scale = 1/this.level;
+		var unitVer = (bbp.height/2) + ((iSize.height/2)*scale);
+		var unitHor = (bbp.width/2) + ((iSize.width/2)*scale);
 		if(this.relation == 'N')
 			deltaY = -unitVer;
 		else if(this.relation == 'E')
@@ -141,7 +143,8 @@ Son.Element.prototype.show = function()
 		var r = new paper.Rectangle(this.parent._raster.bounds);
 		
 		this._raster.bounds.setCenter(p);
-		this._raster.bounds.scale(1/this.level);
+		var res = this._raster.bounds.scale(scale);
+		this._raster.setBounds(res);
 		console.log('SHOW('+this.id+', '+this.relation+') => '+this._raster.bounds.center);
 	}
 	else
