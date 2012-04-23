@@ -31,7 +31,7 @@ Son.ElemCollection.prototype.push = function(elem)
 
 Son.ElemCollection.prototype.get = function(id)
 {
-	for(var i = 0; i < this._array.length; i++)
+	for(var i = 0; i < this._index.length; i++)
 	{
 		if(this._index[i].id === id)
 			return this._array[this._index[i].idx];
@@ -42,6 +42,17 @@ Son.ElemCollection.prototype.get = function(id)
 Son.ElemCollection.prototype.getData = function()
 {
 	return this._array;
+}
+
+Son.ElemCollection.prototype.intersects = function(rect, self)
+{
+	for(var i = 0; i < this._array.length; i++)
+	{
+		if(this._array[i].id != self
+			&& rect.intersects(this._array[i]._raster.bounds))
+			return true;
+	}
+	return false;
 }
 
 Son.RC = new Son.ElemCollection();
@@ -129,8 +140,8 @@ Son.Element.prototype.show = function()
 		var deltaY = 0;
 		var iSize = this._raster.size;
 		var scale = 1/this.level;
-		var unitVer = (bbp.height/2) + ((iSize.height/2)*scale);
-		var unitHor = (bbp.width/2) + ((iSize.width/2)*scale);
+		var unitVer = (bbp.height/2) /*+ ((iSize.height/2)*scale)*/;
+		var unitHor = (bbp.width/2) /*+ ((iSize.width/2)*scale)*/;
 		if(this.relation == 'N')
 			deltaY = -unitVer;
 		else if(this.relation == 'E')
@@ -143,9 +154,21 @@ Son.Element.prototype.show = function()
 		var r = new paper.Rectangle(this.parent._raster.bounds);
 		
 		this._raster.bounds.setCenter(p);
-		var res = this._raster.bounds.scale(scale);
+		var res = new paper.Rectangle(this._raster.bounds.scale(scale));
+		console.log('SHOW('+this.id+', '+this.relation+') => '+res.center);
+		while(Son.RC.intersects(res, this.id))
+		{
+			if(this.relation == 'N')
+				res.center.y -= 2;
+			else if(this.relation == 'E')
+				res.center.x += 2;
+			else if(this.relation == 'S')
+				res.center.y += 2;
+			else if(this.relation == 'W')
+				res.center.x -= 2;
+			console.log('MOVED => '+res.center);
+		}
 		this._raster.setBounds(res);
-		console.log('SHOW('+this.id+', '+this.relation+') => '+this._raster.bounds.center);
 	}
 	else
 	{
