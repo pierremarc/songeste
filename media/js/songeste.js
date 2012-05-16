@@ -20,13 +20,10 @@ Son.ElemCollection = function()
 
 Son.ElemCollection.prototype.push = function(elem)
 {
-// 	if(!this.get(elem.id))
-// 		return false;
 	this._array.push(elem);
 	this._index.push({id:elem.id, idx:this._array.length - 1});
 	var e = jQuery.Event("elem_added", { array_len: this._array.length, elem_id:elem.id });
 	jQuery(document).trigger(e);
-// 	return true;
 }
 
 Son.ElemCollection.prototype.get = function(id)
@@ -55,16 +52,34 @@ Son.ElemCollection.prototype.intersects = function(rect, self)
 	return false;
 }
 
+Son.ElemCollection.prototype.clear = function()
+{
+	this._array = new Array();
+	this._index = new Array();
+}
+
 Son.RC = new Son.ElemCollection();
 
 Son.Element = function(id, level, parent, relation)
 {
 	console.log('Element: '+id);
 	this.id = id;
-	this.level = level;
-	this.parent = (level > 1) ? parent : null;
-	this.relation = (level > 1) ? relation : null;
+	this.parent = (parent != undefined) ? parent : null;
+	this.relation = (parent != undefined) ? relation : null;
 	this.children = new Array();
+	
+// 	if(this.parent == null)
+// 	{
+// 		$(document).bind('elem_added', function(e)
+// 		{
+// 			if(e.elem_id == id)
+// 			{
+// 				var elem = Son.RC.get(id);
+// 				if(elem)
+// 					elem.show();
+// 			}
+// 		});
+// 	}
 	
 	this._src = null;
 	this._type = 'none';
@@ -80,18 +95,101 @@ Son.Element = function(id, level, parent, relation)
 	});
 }
 
+Son.Element.prototype.level = function()
+{
+	var ret = 1;
+	var p = this.parent;
+	while(p)
+	{
+		ret +=1;
+		p = p.parent;
+	}
+	return ret;
+}
+
+Son.Element.prototype.removeChildren = function(id)
+{
+	var cidx = -1;
+	var ret = null;
+	for(var i = 0; i < this.children.length; i++)
+	{
+		if(this.children[i].id == id)
+		{
+			cidx = i;
+			ret = this.children[i];
+			break;
+		}
+	}
+	if(cidx >= 0)
+	{
+		this.children.splice(cidx,1);
+	}
+	return ret;
+}
+
+Son.Element.prototype.reset = function()
+{
+	// reattach root element to a possible parent (1st of its children atm)
+	if(this.parent == null)
+		return false;
+	
+	
+	var rparent = Son.RootElement.children.shift();
+	if(rparent.relation == 'N')
+		Son.RootElement.relation = 'S';
+	else if(rparent.relation == 'E')
+		Son.RootElement.relation = 'W';
+	else if(rparent.relation == 'S')
+		Son.RootElement.relation = 'N';
+	else if(rparent.relation == 'W')
+		Son.RootElement.relation = 'E';
+	
+	rparent.relation = null;
+	rparent.parent = null;
+	Son.RootElement.parent = rparent;
+	
+	rparent = this.parent;
+	rparent.removeChildren(this.id);
+	if(this.relation == 'N')
+		rparent.relation = 'S';
+	else if(this.relation == 'E')
+		rparent.relation = 'W';
+	else if(this.relation == 'S')
+		rparent.relation = 'N';
+	else if(this.relation == 'W')
+		rparent.relation = 'E';
+	
+	rparent.parent = this;
+	this.parent = null;
+	this.relation = null;
+	this.children.push(rparent);
+	
+	Son.RootElement = this;
+
+	this.show();
+	return false;
+	
+}
 
 Son.Element.prototype._load0 = function()
 {
 	if(this._type != 'record')
 	{
 		var that = this;
-		this.img = jQuery('<img src="" />');
-		Son.ImgContainer.append(this.img);
-		this.img.on('load', function(e){
+		this.img = jQuery('#cont_img_' + this.id);
+		if(this.img.length == 0)
+		{
+			this.img = jQuery('<img id="cont_img_'+ this.id +'" src="" />');
+			Son.ImgContainer.append(this.img);
+			this.img.on('load', function(e){
+				that._load1();
+			});
+			this.img.attr('src', this._src);
+		}
+		else
+		{
 			that._load1();
-		});
-		this.img.attr('src', this._src);
+		}
 	}
 	else
 	{
@@ -116,6 +214,15 @@ Son.Element.prototype._load1 = function()
 		})
 		
 	}
+	else
+	{
+		this._raster.attach('click', function(){
+			if(that.level() > 1)
+			{
+				son_start(that.id);
+			}
+		})
+	}
 	jQuery.getJSON('relations/'+this.id+'/',function(relations){
 		for(var j = 0; j < relations.length; j++)
 		{
@@ -139,7 +246,7 @@ Son.Element.prototype.show = function()
 		var deltaX = 0;
 		var deltaY = 0;
 		var iSize = this._raster.size;
-		var scale = 1/this.level;
+		var scale = 1/this.level();
 		var unitVer = (bbp.height/2) /*+ ((iSize.height/2)*scale)*/;
 		var unitHor = (bbp.width/2) /*+ ((iSize.width/2)*scale)*/;
 		if(this.relation == 'N')
@@ -153,8 +260,10 @@ Son.Element.prototype.show = function()
 		var p = new paper.Point(bbp.center.x + deltaX, bbp.center.y + deltaY);
 		var r = new paper.Rectangle(this.parent._raster.bounds);
 		
-		this._raster.bounds.setCenter(p);
-		var res = new paper.Rectangle(this._raster.bounds.scale(scale));
+		var res0 = new paper.Rectangle(0,0, this._raster.width, this._raster.height);
+		res0.setCenter(p);
+		var res = res0.scale(scale);
+		
 		console.log('SHOW('+this.id+', '+this.relation+') => '+res.center);
 		while(Son.RC.intersects(res, this.id))
 		{
@@ -166,7 +275,7 @@ Son.Element.prototype.show = function()
 				res.center.y += 2;
 			else if(this.relation == 'W')
 				res.center.x -= 2;
-			console.log('MOVED => '+res.center);
+// 			console.log('MOVED => '+res.center);
 		}
 		this._raster.setBounds(res);
 	}
@@ -174,7 +283,13 @@ Son.Element.prototype.show = function()
 	{
 		this._raster.bounds.center = new paper.Point(Son.Canvas.width() /2, Son.Canvas.height() /2);
 	}
+	
 	paper.view.draw();
+	
+	for(var i = 0; i <this.children.length; i++)
+	{
+		this.children[i].show();
+	}
 }
 
 
@@ -218,6 +333,16 @@ Son.Element.prototype.media_animate = function()
 			elems[i]._raster.rotate(3);
 			break; // should work
 		}
+	}
+}
+
+Son.Element.prototype.clear = function()
+{
+	if(this._raster)
+		this._raster.remove();
+	for(var i=0; i < this.children.length; i++)
+	{
+		this.children[i].clear();
 	}
 }
 
@@ -285,22 +410,36 @@ function son_init_jplayer()
 	});
 }
 
+
+function son_start(id)
+{
+	if(id == undefined)
+	{
+		jQuery.getJSON('elements/',function(data){
+			var d = data;
+			var c = d.length;
+			var ridx = Math.floor((Math.random()*c));
+			window.Son.RootElement = new Son.Element(d[ridx].id, 1);
+		});
+	}
+	else
+	{
+		Son.RC.clear();
+		window.Son.RootElement.clear();
+		window.Son.RootElement = new Son.Element(id, 1);
+	}
+}
+
 function son_init()
 {
 	son_init_paper();
 	son_init_jplayer();
-	jQuery.getJSON('elements/',function(data){
-		var d = data;
-		var c = d.length;
-		var ridx = Math.floor((Math.random()*c));
-// 		son_get_element(d[ridx].id, 0);
-		$(document).bind('elem_added', function(e){
-			var elem = Son.RC.get(e.elem_id);
-			if(elem)
-				elem.show();
-		});
-		new Son.Element(d[ridx].id, 1);
-	});
+	son_start();
+	
+	setInterval(function(){
+		if(window.Son.RootElement)
+			window.Son.RootElement.show();
+	},1000);
 }
 
 jQuery(document).ready(son_init);

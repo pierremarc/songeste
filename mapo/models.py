@@ -6,6 +6,7 @@ class Element(models.Model):
 		
 	etype = models.CharField(max_length=32, blank=False, choices=[['symbol','Symbol'],['location','Location'],['image','Image'],['record','Record']])
 	relation = models.ManyToManyField("self", symmetrical=False, through='Relation')
+	rec = models.FileField(upload_to='records')
 	
 	def __unicode__(self):
 		if self.etype == 'symbol':
@@ -66,10 +67,10 @@ class Location(models.Model):
 	name = models.CharField(max_length=128)
 	element = models.OneToOneField(Element)
 	
-class Record(models.Model):
-	tname = 'record'
-	rec = models.FileField(upload_to='records')
-	element = models.OneToOneField(Element)
+#class Record(models.Model):
+	#tname = 'record'
+	#rec = models.FileField(upload_to='records')
+	#element = models.OneToOneField(Element)
 	
 
 	

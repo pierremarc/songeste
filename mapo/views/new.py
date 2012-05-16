@@ -14,6 +14,10 @@ def element(request):
 	ret = {}
 	etype = request.POST['t']
 	t = Element()
+	
+	if request.FILES['record']:
+		t.rec = request.FILES['record']
+	
 	t.etype = etype
 	if etype != 'location':
 		if request.FILES[etype]:
@@ -26,10 +30,11 @@ def element(request):
 			if etype == 'symbol':
 				impl = Symbol()
 				ff = impl.picture
-			if etype == 'record':
-				impl = Record()
-				ff = impl.rec
-				
+			#if etype == 'record':
+				#impl = Record()
+				#ff = impl.rec
+			
+			
 			t.save()
 			impl.element_id = t.id
 			ff.save(f.name, f)
@@ -56,15 +61,15 @@ def relation(request):
 	
 @csrf_exempt
 def handle(request, name):
-	print('NEW.HANDLE: %s'%(name,))
+	#print('NEW.HANDLE: %s'%(name,))
 	if name == 'element':
 		if request.POST:
 			return element(request)
 		form = []
 		form.append({'enc':'multipart/form-data','t':'image', 'i':[('file','image')]})
 		form.append({'enc':'multipart/form-data','t':'symbol', 'i':[('file','symbol')]})
-		form.append({'enc':'multipart/form-data','t':'record', 'i':[('file','record')]})
-		form.append({'enc':'application/x-www-form-urlencoded','t':'location', 'i':[('text','lon'),('text','lat')]})
+		#form.append({'enc':'multipart/form-data','t':'record', 'i':[('file','record')]})
+		form.append({'enc':'multipart/form-data','t':'location', 'i':[('text','lon'),('text','lat')]})
 		return render_to_response("new.html", {'form':form}, context_instance = RequestContext(request))
 	elif name == 'relation':
 		if request.POST:

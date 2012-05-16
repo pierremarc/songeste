@@ -12,6 +12,7 @@
 		{% for i in f.i %}
 		{{ i.1 }}: <input type="{{ i.0 }}" name="{{ i.1 }}" />
 		{% endfor %}
+		<div><em>track: <input type="file" name="record" /> </em></div>
 		<input type="submit" />
 	</form>
 {% endfor %}
