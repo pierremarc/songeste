@@ -181,10 +181,22 @@ Son.Rect.prototype.move = function(x, y)
 
 Son.Rect.prototype.intersects = function(r) 
 {
-        return (this.left() <= r.right() &&
-        r.left() <= this.right() &&
-        this.top() <= r.bottom() &&
-        r.top() <= this.bottom());
+    return (
+        this.left() <= r.right() 
+        && r.left() <= this.right()
+        && this.top() <= r.bottom()
+        && r.top() <= this.bottom()
+    );
+}
+
+Son.Rect.prototype.includes = function(r)
+{
+    return (
+        this.left() <= r.left() 
+        && this.right() >= r.right()
+        && this.bottom() >= r.bottom()
+        && this.top() <= r.top()
+    );
 }
 
 Son.Rect.prototype.scale = function(s, o)
@@ -193,5 +205,10 @@ Son.Rect.prototype.scale = function(s, o)
     t.scale(s,s, o);
     t.mapRect(this);
     return this;
+}
+
+Son.Rect.prototype.toString = function()
+{
+    return '('+this._x+'+'+this._y+' '+this._width+'x'+this._height+')';
 }
 

@@ -12,6 +12,13 @@
 window.Son = window.Son || {};
 
 Son.DEG_TO_RAD = 0.0174532925199432958
+Son.CIRCLE_ANGLE_RAD = Math.PI * 2 
+
+var dbg_pixel={'N':'http://127.0.0.1/~pierre/songeste/songeste/media/dbgpixel.png',
+    'E':'http://127.0.0.1/~pierre/songeste/songeste/media/dbgpixel0.png',
+    'S':'http://127.0.0.1/~pierre/songeste/songeste/media/dbgpixel1.png',
+    'W':'http://127.0.0.1/~pierre/songeste/songeste/media/dbgpixel2.png'
+}
 
 Son.ElemCollection = function(sz)
 {
@@ -81,7 +88,7 @@ Son.Item = function(id, parent, relation)
     Son.RC.push(this);
     
     if(this.series == undefined)
-        this.prepareSpiralSeries(1, Math.min(jQuery(window).width() / 2,jQuery(window).height() / 2));
+        this.prepareSpiralSeries(.1, Math.max(jQuery(window).width() ,jQuery(window).height() ));
     
     var that = this;
         jQuery.getJSON('element/'+id+'/',function(elem){
@@ -99,6 +106,7 @@ Son.Item = function(id, parent, relation)
 
 // in polar coordinates angle 
 Son.Item.prototype.Card = {'N':90, 'E':180, 'S':270, 'W':0}
+Son.Item.prototype.CardSize = 4;
 
 Son.Item.prototype.RelInv = {'N':'S', 'E':'W', 'S':'N', 'W':'E'}
 
@@ -125,7 +133,7 @@ Son.Item.prototype.prepareSpiralSeries = function(t_factor, r_limit)
 {
     Son.Item.prototype.series = new Object();
     
-    var cardn = this.Card.length ;
+    var cardn = this.CardSize ;
     var istep = 360 / (2 * cardn);
     for(var c in this.Card)
     {
@@ -135,25 +143,46 @@ Son.Item.prototype.prepareSpiralSeries = function(t_factor, r_limit)
         var min = (val - istep) * Son.DEG_TO_RAD;
         var max = (val + istep) * Son.DEG_TO_RAD;
         
+        if(min < 0)
+        {
+            min = Son.CIRCLE_ANGLE_RAD + min;
+        }
+        
+        
         var r = 0; // radial
         var t = 0; // angular
         var x = 0;
         var y = 0;
         while(r < r_limit)
         {
-            if(t < min || t > max)
-            {
-                var adv = min - t;
-                t = min;
-                r += adv * t_factor;
-            }
-            t += 1;
+//             if(t < min && t > max)
+//             {
+//                 var adv = min - t;
+//                 t = min;
+//                 r += adv * t_factor;
+//             }
+            t += Son.DEG_TO_RAD;
             r += t_factor;
-            if(t > 400)
-                t -= 400;
-            x = Math.floor(r * Math.cos(t));
-            y = Math.floor(r * Math.sin(t));
-            Son.Item.prototype.series[c].push([x,y]);
+            if(t > Son.CIRCLE_ANGLE_RAD)
+                t = 0;
+            if(min < max)
+            {
+                if(t > min && t <= max)
+                {
+                    x = Math.floor(r * Math.cos(t));
+                    y = Math.floor(r * Math.sin(t));
+                    Son.Item.prototype.series[c].push([x,y]);
+                }
+            }
+            else
+            {
+                 if(t < max || t > min)
+                {
+                    x = Math.floor(r * Math.cos(t));
+                    y = Math.floor(r * Math.sin(t));
+                    Son.Item.prototype.series[c].push([x,y]);
+                }
+            }
         }
         
     }
@@ -220,10 +249,14 @@ Son.Item.prototype.rootify = function()
 
 Son.Item.prototype.layout = function(with_children)
 {
-//     this.valid_layout = false;
-//     console.log('Layout : '+ this.id);
+    var w = jQuery(window);
+    var wh = w.height();
+    var ww = w.width();
+    var winrect = new Son.Rect(0,0,ww,wh);
+    console.log('Winrect '+winrect);
     if(this.parent)
     {
+//         return;
         if(!this.parent.valid_layout)
         {
             console.log('Invalid parent layout '+this.id);
@@ -239,38 +272,73 @@ Son.Item.prototype.layout = function(with_children)
             this._rect.width(), this._rect.height()
         );
         trect.scale(scale, trect.center());
+//         jQuery('body').append('<div style="width:'+trect.width()+'px;height:'+trect.height()+'px;position:absolute;z-index:100;top:'
+//                 +trect.top()+'px;left:'+trect.left()+'px;border:1px solid #999"> ' +this._src.split('/').pop()+ ' </div>');
+// 
+//         
         
-        console.log('Level = '+this.level()+'; Scale = ' + scale
-            +'\n\t ow = '+this.parent.layout_rect.width()+' ; sw = '+trect.width()
-            +'\n\t oh = '+this.parent.layout_rect.height()+' ; sh = '+trect.height());
+//         console.log('Level = '+this.level()+'; Scale = ' + scale
+//             +'\n\t ow = '+this.parent.layout_rect.width()+' ; sw = '+trect.width()
+//             +'\n\t oh = '+this.parent.layout_rect.height()+' ; sh = '+trect.height());
         
         // then we run through our directed slice of spiral to find a position
         var origx = trect.left();
         var origy = trect.top();
+//         console.log(this._src+' / '+this.relation+' / '+this.parent._src);
+        
+//             jQuery('body').append('<img src="'+dbg_pixel[this.relation]
+//             +'" style="width:2px;height:2px;position:absolute;z-index:1000;top:'+trect.top()+'px;left:'+trect.left()+'px" />');
         for(var si = 0; si < this.series[this.relation].length; si++)
         {
-//             console.log('TRECT : '+trect.left()+' '+trect.top());
-            if(!Son.RC.intersects(trect, this.id))
+//                 jQuery('body').append('<img src="'+dbg_pixel[this.relation]
+//             +'" style="width:2px;height:2px;position:absolute;z-index:1000;top:'+trect.top()+'px;left:'+trect.left()+'px" />');
+           
+            if(!winrect.includes(trect))
+            {
+                if(trect.left() < winrect.left())
+                    trect._x += winrect.left() - trect.left();
+                else if(trect.right() > winrect.right())
+                    trect._x -= trect.right() - winrect.right();
+                
+                if(trect.top() < winrect.top())
+                    trect._y += winrect.top() - trect.top();
+                else if(trect.bottom() > winrect.bottom())
+                    trect._y -= trect.bottom() - winrect.bottom();
+                
+                break;
+            }
+           if(!Son.RC.intersects(trect, this.id) )
             {
                 break;
             }
+           
             
             trect.move(
                 origx + this.series[this.relation][si][0],
                 origy + this.series[this.relation][si][1]
             );
+            
         }
-        this.layout_rect = trect;
+        
+        this.layout_rect = new Son.Rect(trect);
     }
     else
     {
         // center on the page
-        var w = jQuery(window);
-        var wh = w.height();
-        var ww = w.width();
+        
         var x = (ww / 2) - (this._rect.width()/2);
         var y = (wh / 2) - (this._rect.height()/2);
         
+//         for(var rel in this.Card)
+//         {
+//             for(var si = 0; si < this.series[rel].length; si++)
+//             {
+//                 jQuery('body').append('<img src="'+dbg_pixel[rel]
+//             +'" style="width:2px;height:2px;position:absolute;z-index:1000;top:'
+//             +(y + this.series[rel][si][0])+'px;left:'+(x + this.series[rel][si][1])+'px" />');
+//             }
+//         }
+//         
         this.layout_rect = new Son.Rect( x,y, this._rect.width(),this._rect.height() );
         
         if(this._media && !this._media_playing)
@@ -342,6 +410,12 @@ Son.Item.prototype.show = function()
         },
             1600
         );
+//         this._elem.css({
+//             top:this.layout_rect.top(),
+//             left:this.layout_rect.left(),
+//             width:this.layout_rect.width(),
+//             height:this.layout_rect.height()
+//         });
     }
     
       
