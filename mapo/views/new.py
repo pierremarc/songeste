@@ -7,7 +7,7 @@ from django.template import RequestContext
 from django.views.decorators.csrf import csrf_exempt
 from songeste.mapo.models import * 
 import json
-
+from PIL import Image as PImage
 
 
 def element(request):
@@ -15,7 +15,7 @@ def element(request):
 	etype = request.POST['t']
 	t = Element()
 	
-	if request.FILES['record']:
+	if 'record' in request.FILES:
 		t.rec = request.FILES['record']
 	
 	t.etype = etype
@@ -45,6 +45,11 @@ def element(request):
 		l.lat = request.POST['lat']
 		t.location = l
 		t.save()
+		
+	if etype == 'image':
+		im = PImage.open(t.image.drawing.path)
+		im.thumbnail((300,300), PImage.ANTIALIAS)
+		im.save(t.image.drawing.path)
 				
 			
 	return HttpResponse(json.dumps(ret), mimetype='application/json')
@@ -64,7 +69,7 @@ def handle(request, name):
 	#print('NEW.HANDLE: %s'%(name,))
 	if name == 'element':
 		if request.POST:
-			return element(request)
+			element(request)
 		form = []
 		form.append({'enc':'multipart/form-data','t':'image', 'i':[('file','image')]})
 		form.append({'enc':'multipart/form-data','t':'symbol', 'i':[('file','symbol')]})
@@ -73,7 +78,7 @@ def handle(request, name):
 		return render_to_response("new.html", {'form':form}, context_instance = RequestContext(request))
 	elif name == 'relation':
 		if request.POST:
-			return relation(request)
+			relation(request)
 		elems = Element.objects.all()
 		return render_to_response("newrel.html", {'elems':elems}, context_instance = RequestContext(request))
 	else:

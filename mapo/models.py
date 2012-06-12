@@ -13,8 +13,6 @@ class Element(models.Model):
 			return self.symbol.picture.name
 		elif self.etype == 'image':
 			return self.image.drawing.name
-		elif self.etype == 'record':
-			return self.record.rec.name
 		elif self.etype == 'location':
 			return 'lat:%f ; lon:%f'%(float(self.location.lat), float(self.location.lon))
 	
@@ -35,10 +33,6 @@ class Element(models.Model):
 		except Image.DoesNotExist:
 			pass
 					
-		try:
-			impl = self.record
-		except Record.DoesNotExist:
-			pass
 						
 		if impl:
 			self.etype = impl.tname
@@ -52,7 +46,9 @@ class Element(models.Model):
 	
 class Image(models.Model):
 	tname = 'image'
-	drawing = models.ImageField(upload_to='drawings')
+	height=models.PositiveIntegerField()
+	width=models.PositiveIntegerField()
+	drawing = models.ImageField(upload_to='drawings', height_field='height', width_field='width', )
 	element = models.OneToOneField(Element)
 	
 class Symbol(models.Model):

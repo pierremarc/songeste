@@ -26,7 +26,7 @@ def e_all(request):
 	
 class SrcExtractor(object):
 	def image(self, el):
-		return {'src' : el.image.drawing.url}
+		return {'src' : el.image.drawing.url, 'width': el.image.drawing.width, 'height': el.image.drawing.height}
 	
 	def symbol(self, el):
 		return {'src' : el.symbol.picture.url}
@@ -53,7 +53,13 @@ def e(request, elem):
 	r['id'] = elem
 	r['type'] = el.etype
 	m = getattr(SrcExtractor(), el.etype)
-	r['src'] = m(el)['src']
+	extr = m(el)
+	r['src'] = extr['src']
+	r['width'] = extr['width']
+	r['height'] = extr['height']
+	r['rec'] = False
+	if el.rec:
+		r['rec'] = el.rec.url
 	return HttpResponse(json.dumps(r), mimetype='application/json')
 	
 def rel(request, elem):
