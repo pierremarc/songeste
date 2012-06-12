@@ -253,7 +253,7 @@ Son.Item.prototype.layout = function(with_children)
     var wh = w.height();
     var ww = w.width();
     var winrect = new Son.Rect(0,0,ww,wh);
-    console.log('Winrect '+winrect);
+    console.log('L '+this.id);
     if(this.parent)
     {
 //         return;
@@ -480,32 +480,37 @@ function son_init_jplayer()
 
 
 function son_start(id)
-{
-        if(id == undefined)
-        {
-                jQuery.getJSON('elements/',function(data){
-                        var d = data;
-                        var c = d.length;
-                        Son.RC = new Son.ElemCollection(c);
-                        var ridx = Math.floor((Math.random()*c));
-                        window.Son.RootElement = new Son.Item(d[ridx].id);
-                        
-                });
-        }
-        else
-        {
-                if(window.Son.RootElement._media_playing)
-                {
-                        window.Son.RootElement.media_pause();
-                }
-                window.Son.RootElement = new Son.Element(id, 1);
-        }
+{    
+    jQuery.getJSON('elements/',function(data){
+            var d = data;
+            var c = d.length;
+            Son.RC = new Son.ElemCollection(c);
+            var ridx = id ;
+            if(id == undefined)
+                ridx = Math.floor((Math.random()*c));
+            window.Son.RootElement = new Son.Item(d[ridx].id);
+            
+    });
 }
 
 function son_init()
 {
         son_init_jplayer();
-        son_start();
+        if(window.son_composition == undefined)
+            son_start();
+        else
+        {
+            var id = son_composition.shift();
+            $(document).on($.jPlayer.event.ended, function(e){
+                if(son_composition.length > 0)
+                {
+                    var n = son_composition.shift();
+                    var ne = Son.RC.get(n);
+                    ne.rootify();
+                }
+            });
+            son_start(id);
+        }
         
         $(document).bind('collection_complete', function(e)
         {

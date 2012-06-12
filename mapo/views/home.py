@@ -10,4 +10,9 @@ import json
 
 
 def handle(request):
-	return render_to_response("home.html", {'home':True}, context_instance = RequestContext(request))
+    param = {'home':True}
+    if 'c' in request.GET:
+        comp = request.GET['c'].split(',')
+        param['comp'] = comp
+        
+    return render_to_response("home.html", param, context_instance = RequestContext(request))
