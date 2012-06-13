@@ -221,7 +221,7 @@ Son.Item.prototype.removeChild = function(id)
         return ret;
 }
 
-Son.Item.prototype.rootify = function()
+Son.Item.prototype.rootify = function(trigger)
 {
     Son.RC.run(function(){this.valid_layout = false});
     
@@ -244,6 +244,11 @@ Son.Item.prototype.rootify = function()
     Son.RootElement = this;
     this.layout(true);
     this.show();
+    if(trigger)
+    {
+        var e = jQuery.Event("item_root", {item:this});
+        jQuery(document).trigger(e);
+    }
 }
 
 
@@ -397,7 +402,7 @@ Son.Item.prototype.show = function()
         this._elem.attr('src',this._src);
         this._elem.on('click', function()
         {
-            that.rootify();
+            that.rootify(true);
         });
     }
     else
@@ -498,6 +503,27 @@ function son_start(id)
     });
 }
 
+function son_update_composition(e)
+{
+    var item = e.item;
+    if(Son.composition_box == undefined)
+    {
+        Son.composition_box = jQuery('<div id="composition-box" />');
+        jQuery('body').append(Son.composition_box);
+        Son.composition_array = new Array();
+    }
+    Son.composition_array.push(item);
+    var ielem = jQuery('<div class="composition-item" id="composition-item-'+Son.composition_array.length+'"></div>');
+    var iw = 32;
+    var ih = item._rect.height() * iw / item._rect.width();
+    var iimg = jQuery('<img src="'+item._src+'" width="'+iw+'" height="'+ih+'" />');
+    ielem.on('click', function(){
+        item.rootify(false);
+    });
+    ielem.append(iimg);
+    Son.composition_box.append(ielem);
+}
+
 function son_init()
 {
         son_init_jplayer();
@@ -521,6 +547,8 @@ function son_init()
         {
            window.Son.RootElement.show();
         });
+        
+        $(document).bind('item_root', son_update_composition);
 }
 
 jQuery(document).ready(son_init);

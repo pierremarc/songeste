@@ -4,7 +4,7 @@
     position:absolute;
     z-index:9999;
     top:0;
-    right:0;
+    left:0;
 }
 
 .player-control{
@@ -19,4 +19,38 @@
     box-shadow: 1px 2px 2px #888;
     height: 18pt;
     background-color: #EEF;
+}
+
+.player-control:hover{
+    box-shadow: 1px 1px 1px #766;
+   /* padding: 0 3pt;
+    line-height: 19pt;
+    height: 17pt;*/
+    
+}
+
+.son-item:hover{
+    cursor:pointer;
+    
+}
+
+
+#composition-box{
+    position:absolute;
+    z-index:9999;
+    top:3px;
+    right:3px;
+    width:48px;
+    padding:3px;
+/*     border: 1px solid #111; */
+}
+
+.composition-item{
+   box-shadow: 1px 1px 1px #766;
+    margin: 5px 0;
+    border: 1px solid #BBB;
+}
+
+.composition-item:hover{
+    cursor:pointer;
 }
