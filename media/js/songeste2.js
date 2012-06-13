@@ -474,7 +474,12 @@ function son_init_jplayer()
                 swfPath: jplayerswf,
                 errorAlerts: false,
                 warningAlerts: false,
-                ready: function(){Son.player_ready = true;}
+                ready: function(){Son.player_ready = true;},
+                cssSelectorAncestor:'',
+                cssSelector:{
+                play: "#player-play",
+                pause: "#player-pause"
+                }
         });
 }
 

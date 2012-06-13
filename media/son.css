@@ -1,0 +1,22 @@
+/* son.css */
+
+#nav-box{
+    position:absolute;
+    z-index:9999;
+    top:0;
+    right:0;
+}
+
+.player-control{
+    font-size: 13pt;
+    font-family: monospace;
+    font-weight: bold;
+    padding: 0 4pt;
+    line-height: 20pt;
+    border: 1px solid #AAA;
+    margin: 6px;
+    cursor: pointer;
+    box-shadow: 1px 2px 2px #888;
+    height: 18pt;
+    background-color: #EEF;
+}

@@ -7,20 +7,22 @@
 var son_placeholder = '{{ MEDIA_URL }}placeholder.png';
 var son_player_image = undefined;
 var jplayerswf = '{{ MEDIA_URL }}js/jplayer/Jplayer.swf';
-</script>
-<script src="{{ MEDIA_URL }}js/jquery.js"></script>
-<script src="{{ MEDIA_URL }}js/jplayer/jquery.jplayer.min.js"></script>
-<!-- <script src="{{ MEDIA_URL }}js/paper.js"></script> -->
-<!--<script src="http://localhost/~pierre/paper.js/lib/prepro.js"></script>
-<script src="http://localhost/~pierre/paper.js/src/load.js"></script>-->
+
 {% if comp %}
-<script>
 var son_composition = new Array();
 {% for c in comp %}
 son_composition.push({{c}});
 {% endfor %}
-</script>
 {% endif %}
+</script>
+
+<link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}son.css" />
+<script src="{{ MEDIA_URL }}js/jquery.js"></script>
+<script src="{{ MEDIA_URL }}js/jplayer/jquery.jplayer.js"></script>
+<!-- <script src="{{ MEDIA_URL }}js/paper.js"></script> -->
+<!--<script src="http://localhost/~pierre/paper.js/lib/prepro.js"></script>
+<script src="http://localhost/~pierre/paper.js/src/load.js"></script>-->
+
 <script src="{{ MEDIA_URL }}js/songeom.js"></script>
 <script src="{{ MEDIA_URL }}js/songeste2.js"></script>
 
@@ -28,6 +30,13 @@ son_composition.push({{c}});
 
 </head>
 <body>
-
+    <div id="nav-box">
+    <div class="player-control" id="player-play">
+    PLAY
+    </div>
+    <div class="player-control" id="player-pause">
+    PAUSE
+    </div>
+    </div>
 </body>
 </html>
