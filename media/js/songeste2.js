@@ -404,6 +404,7 @@ Son.Item.prototype.show = function()
         {
             that.rootify(true);
         });
+         $(document).off($.jPlayer.event.ended);
     }
     else
     {
@@ -489,20 +490,6 @@ function son_init_jplayer()
 }
 
 
-function son_start(id)
-{    
-    jQuery.getJSON('elements/',function(data){
-            var d = data;
-            var c = d.length;
-            Son.RC = new Son.ElemCollection(c);
-            var ridx = id ;
-            if(id == undefined)
-                ridx = Math.floor((Math.random()*c));
-            window.Son.RootElement = new Son.Item(d[ridx].id);
-            
-    });
-}
-
 function son_update_composition(e)
 {
     var item = e.item;
@@ -524,6 +511,22 @@ function son_update_composition(e)
     Son.composition_box.append(ielem);
 }
 
+
+function son_start(id)
+{    
+    jQuery.getJSON('elements/',function(data){
+            var d = data;
+            var c = d.length;
+            Son.RC = new Son.ElemCollection(c);
+            var ridx = id ;
+            if(id == undefined)
+                ridx = Math.floor((Math.random()*c));
+            window.Son.RootElement = new Son.Item(d[ridx].id);
+            
+    });
+}
+
+
 function son_init()
 {
         son_init_jplayer();
@@ -537,7 +540,7 @@ function son_init()
                 {
                     var n = son_composition.shift();
                     var ne = Son.RC.get(n);
-                    ne.rootify();
+                    ne.rootify(true);
                 }
             });
             son_start(id);
@@ -546,6 +549,8 @@ function son_init()
         $(document).bind('collection_complete', function(e)
         {
            window.Son.RootElement.show();
+           son_update_composition({item:window.Son.RootElement});
+            
         });
         
         $(document).bind('item_root', son_update_composition);
