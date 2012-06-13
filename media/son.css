@@ -1,5 +1,17 @@
 /* son.css */
 
+@font-face{
+	font-family:reglo;
+	src:url('reglo.ttf');
+}
+
+*{
+	margin:0;
+	padding:0;
+	border:none;
+	font-family:reglo;
+}
+
 #nav-box{
     position:absolute;
     z-index:9999;
@@ -8,8 +20,8 @@
 }
 
 .player-control{
-    font-size: 13pt;
-    font-family: monospace;
+    font-size: 18pt;
+/*     font-family: monospace; */
     font-weight: bold;
     padding: 0 4pt;
     line-height: 20pt;
@@ -21,11 +33,11 @@
     background-color: #EEF;
 }
 
+#player-pause{background-color:#f45}
+#player-play{background-color:#54f}
+
 .player-control:hover{
     box-shadow: 1px 1px 1px #766;
-   /* padding: 0 3pt;
-    line-height: 19pt;
-    height: 17pt;*/
     
 }
 
@@ -53,4 +65,31 @@
 
 .composition-item:hover{
     cursor:pointer;
+    box-shadow: none;
+}
+
+#info-box{
+	position:absolute;
+	z-index:9999;
+	bottom:7px;
+	left:3px;
+/* 	text-align:right; */
+	padding:3px;
+}
+
+.info-item{
+	 box-shadow: 1px 2px 2px #766;
+    margin: 0 1px;
+    padding:3px 5px;
+    border: 1px solid #BBB;
+}
+
+.info-item a{
+	text-decoration:none;
+	color:#111;
+	font-size:13pt;
+}
+
+.info-item:hover{
+    box-shadow: 1px 1px 1px #766;
 }

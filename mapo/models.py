@@ -71,8 +71,8 @@ class Location(models.Model):
 
 	
 	
-REL_CARD_NAMES = [['N','NORTH'],['E','EAST'],['S','SOUTH'],['W','WEST']]
-REL_CARD = ['N', 'E', 'S', 'W']
+REL_CARD_NAMES = [['R','Rouge'],['O','Orange']['J','Jaune'],['V','Vert'],['B','Bleu'],['L','Lilas']]
+REL_CARD = ['R', 'O', 'J', 'V', 'B', 'L']
 
 class Relation(models.Model):
 	source = models.ForeignKey(Element, related_name='source')
@@ -86,4 +86,6 @@ class Relation(models.Model):
 		return Relation.objects.create(source=self.target, target=self.source, cardinal=rc)
 		
 		
-		
+class Collection(models.Model):
+	name = models.CharField(max_length=128, blank=False)
+	clist = models.CharField(max_length=256)

@@ -105,10 +105,10 @@ Son.Item = function(id, parent, relation)
 }
 
 // in polar coordinates angle 
-Son.Item.prototype.Card = {'N':90, 'E':180, 'S':270, 'W':0}
+Son.Item.prototype.Card = {'R':90, 'O':150, 'J':210, 'V':270, 'B':330 , 'L':30}
 Son.Item.prototype.CardSize = 4;
 
-Son.Item.prototype.RelInv = {'N':'S', 'E':'W', 'S':'N', 'W':'E'}
+Son.Item.prototype.RelInv = {'R':'V', 'O':'B', 'J':'L', 'V':'R', 'B':'O', 'L':'J'}
 
 Son.Item.prototype.load = function()
 {
@@ -403,8 +403,8 @@ Son.Item.prototype.show = function()
         this._elem.on('click', function()
         {
             that.rootify(true);
+		$(document).off($.jPlayer.event.ended);
         });
-         $(document).off($.jPlayer.event.ended);
     }
     else
     {
@@ -506,6 +506,7 @@ function son_update_composition(e)
     var iimg = jQuery('<img src="'+item._src+'" width="'+iw+'" height="'+ih+'" />');
     ielem.on('click', function(){
         item.rootify(false);
+        $(document).off($.jPlayer.event.ended);
     });
     ielem.append(iimg);
     Son.composition_box.append(ielem);
