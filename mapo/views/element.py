@@ -11,16 +11,17 @@ import json
 def e_all(request):
 	r = []
 	for el in Element.objects.all():
-		rel = {'type':el.etype, 'id':el.id}
-		tg = []
-		sel = el.source.all()
-		print(sel)
-		for t in sel:
-			#print(dir(t.target.get()))
-			tt = t
-			tg.append({'id':tt.target_id,'c':tt.cardinal})
-		rel['target'] = tg
-		r.append(rel)
+		if el.source.all():
+			rel = {'type':el.etype, 'id':el.id}
+			tg = []
+			sel = el.source.all()
+			print(sel)
+			for t in sel:
+				#print(dir(t.target.get()))
+				tt = t
+				tg.append({'id':tt.target_id,'c':tt.cardinal})
+			rel['target'] = tg
+			r.append(rel)
 
 	return HttpResponse(json.dumps(r), mimetype='application/json')
 	

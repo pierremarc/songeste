@@ -3,28 +3,83 @@
 <head> 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>New Relation Form</title>
+<script src="{{ MEDIA_URL }}js/jquery.js"></script>
+<style>
+.item{
+	display:inline-block;
+	margin:3px;
+	border:1px solid #999;
+}
+div.selected {
+	border:2px solid #99f;
+	margin:2px;
+}
+div.selected div.item-label{
+	background-color:#ddf;
+}
+.item-label{
+	text-align:center;
+	font-family:monospace;
+	font-size:8pt;
+	font-weight:bold;
+	border-top:1px solid #999;
+}
+.no-rel{
+	border:1px solid #f99;
+}
+.rel-selected{
+	border:2px solid #9f9;
+	margin:2px;
+}
+div.rel-selected div.item-label{
+	background-color:#dfd;
+}
+</style>
+<script>
+$(document).ready(function(){
+	
+	var relations = new Object();
+	$('.item').each(function(idx, el){
+		var id = $(el).attr('id');
+		jQuery.getJSON('/relations/'+id.split('_').pop()+'/', function(rels)
+		{
+			relations[id] = rels;
+		});
+	});
+	$('.item').on('click', function(e){
+		var that = $(this);
+		$('.item').removeClass('rel-selected');
+		if(that.hasClass('selected'))
+		{
+			that.removeClass('selected');
+		}
+		else
+		{
+			$('.item').removeClass('selected');
+			that.addClass('selected');
+			for(var j = 0; j < relations[that.attr('id')].length; j++)
+			{
+				$('#item_'+relations[that.attr('id')][j].id).addClass('rel-selected');
+			}
+		}
+	});
+});
+</script>
 </head>
 <body>
 	<form name="nf_" method="POST">
-		<h4>Source</h4>
-		<select name="s">
+		<div>
 		{% for i in elems %}
-		<option value="{{ i.id }}">{{i}}</option>
+		<div id="item_{{i.id}}" class="item{% if not i.source.all %} no-rel{% endif %}"><img width="44" src="{{ i.image.drawing.url }}" /><div class="item-label">{{i.id}}</div></div>
 		{% endfor %}
-		</select>
+		</div>
 		
-		<h4>Target</h4>
-		<select name="t">
-		{% for i in elems %}
-		<option value="{{ i.id }}">{{i}}</option>
-		{% endfor %}
-		</select>
-		<h4>Cardinality</h4>
+		
+		<!-- rel type -->
 		<select name="c">
-			<option value="N">North</option>
-			<option value="E">East</option>
-			<option value="S">South</option>
-			<option value="W">West</option>
+			{% for c in cards %}
+			<option value="{{ c.0 }}">{{ c.1 }}</option>
+			{% endfor %}
 		<select>
 		<div>
 		<input type="submit" />

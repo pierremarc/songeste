@@ -14,10 +14,12 @@ window.Son = window.Son || {};
 Son.DEG_TO_RAD = 0.0174532925199432958
 Son.CIRCLE_ANGLE_RAD = Math.PI * 2 
 
-var dbg_pixel={'N':'http://127.0.0.1/~pierre/songeste/songeste/media/dbgpixel.png',
-    'E':'http://127.0.0.1/~pierre/songeste/songeste/media/dbgpixel0.png',
-    'S':'http://127.0.0.1/~pierre/songeste/songeste/media/dbgpixel1.png',
-    'W':'http://127.0.0.1/~pierre/songeste/songeste/media/dbgpixel2.png'
+var dbg_pixel={'R':'http://127.0.0.1/~pierre/songeste/songeste/media/dbgpixel.png',
+    'O':'http://127.0.0.1/~pierre/songeste/songeste/media/dbgpixel0.png',
+    'J':'http://127.0.0.1/~pierre/songeste/songeste/media/dbgpixel1.png',
+    'V':'http://127.0.0.1/~pierre/songeste/songeste/media/dbgpixel2.png',
+    'B':'http://127.0.0.1/~pierre/songeste/songeste/media/dbgpixel3.png',
+    'L':'http://127.0.0.1/~pierre/songeste/songeste/media/dbgpixel4.png'
 }
 
 Son.ElemCollection = function(sz)
@@ -343,7 +345,7 @@ Son.Item.prototype.layout = function(with_children)
 //             +(y + this.series[rel][si][0])+'px;left:'+(x + this.series[rel][si][1])+'px" />');
 //             }
 //         }
-//         
+        
         this.layout_rect = new Son.Rect( x,y, this._rect.width(),this._rect.height() );
         
         if(this._media && !this._media_playing)

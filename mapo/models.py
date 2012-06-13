@@ -71,7 +71,7 @@ class Location(models.Model):
 
 	
 	
-REL_CARD_NAMES = [['R','Rouge'],['O','Orange']['J','Jaune'],['V','Vert'],['B','Bleu'],['L','Lilas']]
+REL_CARD_NAMES = [['R','Rouge'],['O','Orange'],['J','Jaune'],['V','Vert'],['B','Bleu'],['L','Lilas']]
 REL_CARD = ['R', 'O', 'J', 'V', 'B', 'L']
 
 class Relation(models.Model):
