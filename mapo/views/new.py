@@ -89,15 +89,21 @@ def handle(request, name):
 	if name == 'element':
 		if request.POST:
 			element(request)
-		form = []
-		form.append({'enc':'multipart/form-data','t':'image', 'i':[('file','image')]})
+		#form = []
+		#form.append({'enc':'multipart/form-data','t':'image', 'i':[('file','image')]})
 		#form.append({'enc':'multipart/form-data','t':'symbol', 'i':[('file','symbol')]})
 		#form.append({'enc':'multipart/form-data','t':'record', 'i':[('file','record')]})
 		#form.append({'enc':'multipart/form-data','t':'location', 'i':[('text','lon'),('text','lat')]})
-		return render_to_response("new.html", {'form':form}, context_instance = RequestContext(request))
+		#return render_to_response("new.html", {'form':form}, context_instance = RequestContext(request))
+		elems = Element.objects.all()
+		return render_to_response("newrel.html", {'elems':elems, 'cards':REL_CARD_NAMES}, context_instance = RequestContext(request))
 	elif name == 'relation':
 		if request.POST:
-			return relation(request)
+			if 'a' in request.POST:
+				if request.POST['a'] == 'res':
+					element(request)
+				else:
+					return relation(request)
 		elems = Element.objects.all()
 		return render_to_response("newrel.html", {'elems':elems, 'cards':REL_CARD_NAMES}, context_instance = RequestContext(request))
 	else:

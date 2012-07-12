@@ -20,13 +20,13 @@ var jplayerswf = '{{ MEDIA_URL }}js/jplayer/Jplayer.swf';
 
 #form-wrap{
 	margin-left:120px;
-	padding:6px;
+	padding:32px;
 }
 
 #card-select{
 	position:fixed;
-	top:6px;
-	left:6px;
+	top:28px;
+	left:16px;
 	border:1px solid black;
 	padding:3px;
 	font-family:sans-serif;
@@ -99,6 +99,17 @@ div.rel-selected div.item-label{
 	cursor:pointer;
 }
 
+#form-new{
+	position: absolute;
+	top: 0;
+	left: 0;
+	background-color: black;
+	color: white;
+	width: 100%;
+	padding: 3px;
+	height: 24px;
+	line-height: 24px;
+}
 </style>
 <script>
 var son_current_select = null;
@@ -257,10 +268,21 @@ $(document).ready(function(){
 			{% for c in cards %}
 			<div class="card-select-iem"><input type="radio" name="c" value="{{ c.0 }}"/> {{ c.1 }}</div>
 			{% endfor %}
-		<div>
+		</div>
 		<!--<div>
 		<input type="submit" />
 		</div>-->
 	</form>
+	<div id="form-new"/>
+		<form name="nf_image" method="POST" enctype="multipart/form-data">
+			<input type="hidden" name="t" value="image" />
+			<input type="hidden" name="a" value="res" />
+			
+			image: <input type="file" name="image" />
+			
+			<em>track: <input type="file" name="record" /> </em>
+			<input type="submit" />
+		</form>
+	</div>
 </body>
 </html>
