@@ -4,7 +4,25 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>New Relation Form</title>
 <script src="{{ MEDIA_URL }}js/jquery.js"></script>
+<script src="{{ MEDIA_URL }}js/jquery-ui.js"></script>
 <style>
+*{margin:0;border:none;padding:0}
+
+#form-wrap{
+	margin-left:120px;
+	padding:6px;
+}
+
+#card-select{
+	position:fixed;
+	top:6px;
+	left:6px;
+	border:1px solid black;
+	padding:3px;
+	font-family:sans-serif;
+	font-size:9pt;
+	
+}
 .item{
 	display:inline-block;
 	margin:3px;
@@ -24,66 +42,161 @@ div.selected div.item-label{
 	font-weight:bold;
 	border-top:1px solid #999;
 }
+.item-id{
+	border-right:1px solid;
+}
 .no-rel{
 	border:1px solid #f99;
 }
 .rel-selected{
-	border:2px solid #9f9;
+/* 	border:2px solid #dfd; */
 	margin:2px;
 }
 div.rel-selected div.item-label{
 	background-color:#dfd;
 }
+.item-relation-new,.item-relation-del{
+	cursor:pointer;
+}
+
+.item-relation-new:hover{
+	color:blue;
+	font-weight:bold;
+}
+
+.item-relation-del:hover{
+	color:red;
+	font-weight:bold;
+}
+
+.R{ background-color:#FF2F2F; }
+.O{ background-color:#FF8000; }
+.J{ background-color:#FFFF00; }
+.V{ background-color:#00C000; }
+.B{ background-color:#00C0C0; }
+.L{ background-color:#C0C0FF; }
+
+
 </style>
 <script>
+var son_current_select = null;
 $(document).ready(function(){
 	
 	var relations = new Object();
-	$('.item').each(function(idx, el){
+	var cardinals = ['B','O','J','V','B','L'];
+	
+	function init_relations()
+	{
+		relations = new Object();
+		$('.item').each(function(idx, el){
 		var id = $(el).attr('id');
 		jQuery.getJSON('/relations/'+id.split('_').pop()+'/', function(rels)
 		{
 			relations[id] = rels;
 		});
 	});
+	}
+	init_relations();
+	
+	
+	// select
 	$('.item').on('click', function(e){
 		var that = $(this);
 		$('.item').removeClass('rel-selected');
+		$.each(cardinals, function(i,v){$('.item').removeClass(v);});
 		if(that.hasClass('selected'))
 		{
 			that.removeClass('selected');
 		}
-		else
+		
 		{
 			$('.item').removeClass('selected');
 			that.addClass('selected');
+			son_current_select = that;
+			$('.item-relation-new').text('[+]');
+			$('.item-relation-del').text('[-]');
 			for(var j = 0; j < relations[that.attr('id')].length; j++)
 			{
-				$('#item_'+relations[that.attr('id')][j].id).addClass('rel-selected');
+				$('#item_'+relations[that.attr('id')][j].id).addClass('rel-selected').addClass(relations[that.attr('id')][j].cardinal);
 			}
 		}
+	});
+
+	// new relation
+	$('.item-relation-new').on('click', function(e){
+		
+		var s_id = son_current_select.attr('id').split('_');
+		var t_id = $(this).attr('id').split('_');
+		
+		$.post('',{
+			a:'new',
+			t:t_id[1],
+			s:s_id[1],
+			c:$('input:radio[name=c]:checked').val()
+		}, function(data, textStatus, jqXHR){
+			if(data.success)
+			{
+				init_relations();
+			}
+			else
+			{
+				alert('Failed');
+			}
+		});
+	});
+	
+	// delete relation
+	$('.item-relation-del').on('click', function(e){
+		
+		var s_id = son_current_select.attr('id').split('_');
+		var t_id = $(this).attr('id').split('_');
+		
+		$.post('',{
+			a:'del',
+			t:t_id[1],
+			s:s_id[1]
+		}, function(data, textStatus, jqXHR){
+			if(data.success)
+			{
+				init_relations();
+			}
+			else
+			{
+				alert('Failed');
+			}
+		});
 	});
 });
 </script>
 </head>
 <body>
-	<form name="nf_" method="POST">
+	<form id="form-wrap" name="nf_" method="POST">
+	<input id="input-source" type="hidden" name="s" />
+	<input id="input-target" type="hidden" name="t" />
 		<div>
 		{% for i in elems %}
-		<div id="item_{{i.id}}" class="item{% if not i.source.all %} no-rel{% endif %}"><img width="44" src="{{ i.image.drawing.url }}" /><div class="item-label">{{i.id}}</div></div>
+		<div id="item_{{i.id}}" class="item{% if not i.source.all %} no-rel{% endif %}">
+			<img width="72" src="{{ i.image.drawing.url }}" />
+			<div class="item-label"><span class="item-id">{{i.id}}</span>   
+			
+			<span id="itemtargetnew_{{i.id}}" class="item-relation-new"></span>
+			<span id="itemtargetdel_{{i.id}}" class="item-relation-del"></span>
+			
+			</div>
+		</div>
 		{% endfor %}
 		</div>
 		
 		
 		<!-- rel type -->
-		<select name="c">
+		<div id="card-select">
 			{% for c in cards %}
-			<option value="{{ c.0 }}">{{ c.1 }}</option>
+			<div class="card-select-iem"><input type="radio" name="c" value="{{ c.0 }}"/> {{ c.1 }}</div>
 			{% endfor %}
-		<select>
 		<div>
+		<!--<div>
 		<input type="submit" />
-		</div>
+		</div>-->
 	</form>
 </body>
 </html>

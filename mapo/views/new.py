@@ -56,13 +56,32 @@ def element(request):
 	
 	
 def relation(request):
+	a = request.POST['a']
 	t = request.POST['t']
 	s = request.POST['s']
-	c = request.POST['c']
-	r = Relation.objects.create(target=Element.objects.get(pk=t), source=Element.objects.get(pk=s), cardinal=c)
-	r.save()
-	r.reverse().save()
-	return HttpResponse(json.dumps({'success':'OK'}), mimetype='application/json')
+	c = None
+	error = 'Unknown'
+	if 'c' in request.POST:
+		c = request.POST['c']
+	if a == 'new':
+		try:
+			r = Relation.objects.create(target=Element.objects.get(pk=t), source=Element.objects.get(pk=s), cardinal=c)
+			r.save()
+			r.reverse().save()
+			return HttpResponse(json.dumps({'success':'OK'}), mimetype='application/json')
+		except Exception as e:
+			error = '%s'%e 
+	elif a == 'del':
+		try:
+			source = Element.objects.get(pk=s)
+			r = source.source.get(target=t)
+			r.delete()
+			source.save()
+			return HttpResponse(json.dumps({'success':'OK'}), mimetype='application/json')
+		except Exception as e:
+			error = '%s'%e 
+		
+	return HttpResponse(json.dumps({'error':error}), mimetype='application/json')
 	
 @csrf_exempt
 def handle(request, name):
@@ -78,7 +97,7 @@ def handle(request, name):
 		return render_to_response("new.html", {'form':form}, context_instance = RequestContext(request))
 	elif name == 'relation':
 		if request.POST:
-			relation(request)
+			return relation(request)
 		elems = Element.objects.all()
 		return render_to_response("newrel.html", {'elems':elems, 'cards':REL_CARD_NAMES}, context_instance = RequestContext(request))
 	else:

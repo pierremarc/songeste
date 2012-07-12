@@ -67,20 +67,7 @@ Son.Element = function(id, level, parent, relation)
 	this.parent = (parent != undefined) ? parent : null;
 	this.relation = (parent != undefined) ? relation : null;
 	this.children = new Array();
-	
-// 	if(this.parent == null)
-// 	{
-// 		$(document).bind('elem_added', function(e)
-// 		{
-// 			if(e.elem_id == id)
-// 			{
-// 				var elem = Son.RC.get(id);
-// 				if(elem)
-// 					elem.show();
-// 			}
-// 		});
-// 	}
-	
+
 	this._src = null;
 	this._type = 'none';
 	this._media = null;
@@ -132,49 +119,6 @@ Son.Element.prototype.removeChildren = function(id)
 	return ret;
 }
 
-/*Son.Element.prototype.reset = function()
-{
-	// reattach root element to a possible parent (1st of its children atm)
-	if(this.parent == null)
-		return false;
-	
-	
-	var rparent = Son.RootElement.children.shift();
-	if(rparent.relation == 'N')
-		Son.RootElement.relation = 'S';
-	else if(rparent.relation == 'E')
-		Son.RootElement.relation = 'W';
-	else if(rparent.relation == 'S')
-		Son.RootElement.relation = 'N';
-	else if(rparent.relation == 'W')
-		Son.RootElement.relation = 'E';
-	
-	rparent.relation = null;
-	rparent.parent = null;
-	Son.RootElement.parent = rparent;
-	
-	rparent = this.parent;
-	rparent.removeChildren(this.id);
-	if(this.relation == 'N')
-		rparent.relation = 'S';
-	else if(this.relation == 'E')
-		rparent.relation = 'W';
-	else if(this.relation == 'S')
-		rparent.relation = 'N';
-	else if(this.relation == 'W')
-		rparent.relation = 'E';
-	
-	rparent.parent = this;
-	this.parent = null;
-	this.relation = null;
-	this.children.push(rparent);
-	
-	Son.RootElement = this;
-
-	this.show();
-	return false;
-	
-}*/
 
 Son.Element.prototype._load0 = function()
 {
