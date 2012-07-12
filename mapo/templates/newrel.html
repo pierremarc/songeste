@@ -5,6 +5,16 @@
 <title>New Relation Form</title>
 <script src="{{ MEDIA_URL }}js/jquery.js"></script>
 <script src="{{ MEDIA_URL }}js/jquery-ui.js"></script>
+
+<script>
+var son_placeholder = '{{ MEDIA_URL }}placeholder.png';
+var son_player_image = undefined;
+var jplayerswf = '{{ MEDIA_URL }}js/jplayer/Jplayer.swf';
+</script>
+<script src="{{ MEDIA_URL }}js/jplayer/jquery.jplayer.js"></script>
+
+
+
 <style>
 *{margin:0;border:none;padding:0}
 
@@ -29,11 +39,11 @@
 	border:1px solid #999;
 }
 div.selected {
-	border:2px solid #99f;
+	border:2px solid #999;
 	margin:2px;
 }
 div.selected div.item-label{
-	background-color:#ddf;
+	background-color:#999;
 }
 .item-label{
 	text-align:center;
@@ -53,7 +63,7 @@ div.selected div.item-label{
 	margin:2px;
 }
 div.rel-selected div.item-label{
-	background-color:#dfd;
+/* 	background-color:#dfd; */
 }
 .item-relation-new,.item-relation-del{
 	cursor:pointer;
@@ -77,13 +87,27 @@ div.rel-selected div.item-label{
 .L{ background-color:#C0C0FF; }
 
 
+.media-control{
+	text-align:center;
+	font-family:monospace;
+	font-size:6pt;
+	background-color:#000;
+	color:#fff;
+	font-weight:bold;
+}
+.media-control:hover{
+	cursor:pointer;
+}
+
 </style>
 <script>
 var son_current_select = null;
 $(document).ready(function(){
-	
+	window.Son = new Object();
 	var relations = new Object();
-	var cardinals = ['B','O','J','V','B','L'];
+	var cardinals = ['R','O','J','V','B','L'];
+	
+	$('.media-control').hide();
 	
 	function init_relations()
 	{
@@ -98,11 +122,36 @@ $(document).ready(function(){
 	}
 	init_relations();
 	
+	// player
+// 	function son_init_jplayer()
+	{
+		window.Son.MediaPlayerImg = jQuery('<img src="'+son_placeholder+'" style="display:none" />');
+		jQuery('body').append(Son.MediaPlayerImg);
+		
+		window.Son.Player = jQuery('<div style="width:0;height:0"></div>');
+		jQuery('body').append(Son.Player);
+		window.Son.player_ready = false;
+		Son.Player.jPlayer({
+			supplied: "oga",
+			solution: "html,flash",
+			swfPath: jplayerswf,
+			errorAlerts: false,
+			warningAlerts: false,
+			ready: function(){Son.player_ready = true;},
+			cssSelectorAncestor:'',
+			cssSelector:{
+			play: ".media-play",
+			pause: ".media-pause"
+			}
+		});
+	}
+
 	
 	// select
-	$('.item').on('click', function(e){
-		var that = $(this);
+	$('.item > img').on('click', function(e){
+		var that = $(this).parent();
 		$('.item').removeClass('rel-selected');
+		$('.media-control').hide();
 		$.each(cardinals, function(i,v){$('.item').removeClass(v);});
 		if(that.hasClass('selected'))
 		{
@@ -119,6 +168,15 @@ $(document).ready(function(){
 			{
 				$('#item_'+relations[that.attr('id')][j].id).addClass('rel-selected').addClass(relations[that.attr('id')][j].cardinal);
 			}
+			var id = that.attr('id').split('_');
+			jQuery.getJSON('/element/'+id[1]+'/',function(elem){
+				if(elem.rec)
+				{
+					var player = Son.Player;
+					player.jPlayer('setMedia', { oga: elem.rec});
+					that.find('.media-control').show();
+				}
+			});
 		}
 	});
 
@@ -176,6 +234,11 @@ $(document).ready(function(){
 		<div>
 		{% for i in elems %}
 		<div id="item_{{i.id}}" class="item{% if not i.source.all %} no-rel{% endif %}">
+		<div class="media-control">
+			<span class="media-play">play</span>
+			<span class="media-pause">pause</span>
+			</div>
+			
 			<img width="72" src="{{ i.image.drawing.url }}" />
 			<div class="item-label"><span class="item-id">{{i.id}}</span>   
 			
@@ -183,6 +246,7 @@ $(document).ready(function(){
 			<span id="itemtargetdel_{{i.id}}" class="item-relation-del"></span>
 			
 			</div>
+			
 		</div>
 		{% endfor %}
 		</div>
