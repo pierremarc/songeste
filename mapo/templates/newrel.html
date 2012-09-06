@@ -3,8 +3,11 @@
 <head> 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>New Relation Form</title>
-<script src="{{ MEDIA_URL }}js/jquery.js"></script>
-<script src="{{ MEDIA_URL }}js/jquery-ui.js"></script>
+<!--<script src="{{ MEDIA_URL }}js/jquery.js"></script>
+<script src="{{ MEDIA_URL }}js/jquery-ui.js"></script>-->
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jqueryui/1.8.13/jquery-ui.min.js"></script>
+<script src="{{ MEDIA_URL }}js/jquery-jsplumb.js"></script>
 
 <script>
 var son_placeholder = '{{ MEDIA_URL }}placeholder.png';
@@ -86,6 +89,24 @@ div.rel-selected div.item-label{
 .B{ background-color:#00C0C0; }
 .L{ background-color:#C0C0FF; }
 
+.FR{ fill:#FF2F2F; }
+.FO{ fill:#FF8000; }
+.FJ{ fill:#FFFF00; }
+.FV{ fill:#00C000; }
+.FB{ fill:#00C0C0; }
+.FL{ fill:#C0C0FF; }
+
+
+.CR{ stroke:#FF2F2F; }
+.CO{ stroke:#FF8000; }
+.CJ{ stroke:#FFFF00; }
+.CV{ stroke:#00C000; }
+.CB{ stroke:#00C0C0; }
+.CL{ stroke:#C0C0FF; }
+
+.connector{
+	
+}
 
 .media-control{
 	text-align:center;
@@ -133,6 +154,15 @@ $(document).ready(function(){
 	}
 	init_relations();
 	
+	jsPlumb.importDefaults({
+				DragOptions : { cursor: 'pointer', zIndex:2000 },
+				PaintStyle : { strokeStyle:'#666' },
+				EndpointStyle : { width:20, height:16, strokeStyle:'#666' },
+				Endpoint : "Rectangle",
+				Anchors : ["TopCenter", "TopCenter"]
+			});
+	
+// 	jsPlumb.draggable($('.item'));
 	// player
 // 	function son_init_jplayer()
 	{
@@ -159,6 +189,68 @@ $(document).ready(function(){
 
 	
 	// select
+	
+	var connections = [];
+	var updateConnections = function(conn, remove) {
+		
+		var params = conn.getParameters();
+		var s_id = params.source;
+		var t_id = params.target;
+		var color = params.color;
+		
+		if (!remove)
+		{
+			
+			
+			$.post('',{
+				a:'new',
+				t:t_id,
+				s:s_id,
+				c:color
+			}, function(data, textStatus, jqXHR){
+				if(data.success)
+				{
+					console.log('SUCCESS => '+color+' '+s_id+' x '+t_id);
+				}
+				else
+				{
+					alert('Failed to connect');
+				}
+			});
+	
+			connections.push(conn);
+		}
+		else 
+		{
+			$.post('',{
+				a:'del',
+				t:t_id,
+				s:s_id
+				}, function(data, textStatus, jqXHR){
+					if(data.success)
+					{}
+					else
+					{
+						alert('Failed to remove connection');
+					}
+				});
+			var idx = -1;
+			for (var i = 0; i < connections.length; i++) {
+				if (connections[i] == conn) {
+					idx = i; break;
+				}
+			}
+			if (idx != -1) connections.splice(idx, 1);
+		}
+	};				
+
+	jsPlumb.bind("connection", function(info, originalEvent) {
+		updateConnections(info.connection);
+	});
+	jsPlumb.bind("connectionDetached", function(info, originalEvent) {
+		updateConnections(info.connection, true);
+	});
+	
 	$('.item > img').on('click', function(e){
 		var that = $(this).parent();
 		$('.item').removeClass('rel-selected');
@@ -172,13 +264,74 @@ $(document).ready(function(){
 		{
 			$('.item').removeClass('selected');
 			that.addClass('selected');
-			son_current_select = that;
-			$('.item-relation-new').text('[+]');
-			$('.item-relation-del').text('[-]');
-			for(var j = 0; j < relations[that.attr('id')].length; j++)
+			jsPlumb.deleteEveryEndpoint();
+			
+			var colors = 'ROJVBL';
+			var color_code = ['#FF2F2F', '#FF8000', '#FFFF00', '#00C000', '#00C0C0', '#C0C0FF'];
+			var anchors = ["TopRight" ,"RightMiddle" ,"BottomRight", "BottomCenter" ,"BottomLeft" ,"LeftMiddle", "TopLeft"];
+			var default_params = {
+					endpoint:"Rectangle",
+					isSource:true,
+					isTarget:false,
+					reattach:false,
+					scope:'songeste'
+				};
+			for(var c in colors)
 			{
-				$('#item_'+relations[that.attr('id')][j].id).addClass('rel-selected').addClass(relations[that.attr('id')][j].cardinal);
+				jsPlumb.addEndpoint(that,
+					{
+						anchor:anchors[c],
+						paintStyle:{ width:12, height:12, fillStyle:color_code[c]},
+						connectorStyle : { lineWidth:5, strokeStyle:color_code[c] },
+						parameters: {color:colors[c], source:that.attr('id').split('_').pop()}
+					}, default_params);
+				
 			}
+			
+			function bd(params)
+			{
+				return true;
+			}
+			
+			$('.item').each(function(idx, elem){
+// 				console.log('that: '+that.attr('id')+'  elem: '+$(elem).attr('id') + ' => ' + ($(elem).attr('id') == that.attr('id')));
+				if($(elem).attr('id') == that.attr('id'))
+				{
+// 					console.log('?????');
+				}
+				else
+				{
+					jsPlumb.addEndpoint(elem,
+					{
+						endpoint:["Dot", { radius:6 }],
+						isSource:false,
+						isTarget:true,
+						reattach:false,
+						beforeDrop:bd,
+						dropOptions : { tolerance:'touch', hoverClass:'dropHover', activeClass:'dragActive' },
+						anchor: "BottomCenter",
+						paintStyle: { fillStyle:'#bbb' },
+						parameters: {target:$(elem).attr('id').split('_').pop()},
+						scope:'songeste'
+					});
+				}
+			});
+			
+			son_current_select = that;
+			
+			## TODO ##
+			$('.item').each(function(idx, el){
+				var id = $(el).attr('id');
+				jQuery.getJSON('/relations/'+id.split('_').pop()+'/', function(rels)
+				{
+					relations[id] = rels;
+				});
+// 			$('.item-relation-new').text('[+]');
+// 			$('.item-relation-del').text('[-]');
+// 			for(var j = 0; j < relations[that.attr('id')].length; j++)
+// 			{
+// 				$('#item_'+relations[that.attr('id')][j].id).addClass('rel-selected').addClass(relations[that.attr('id')][j].cardinal);
+// 			}
 			var id = that.attr('id').split('_');
 			jQuery.getJSON('/element/'+id[1]+'/',function(elem){
 				if(elem.rec)
@@ -192,56 +345,54 @@ $(document).ready(function(){
 	});
 
 	// new relation
-	$('.item-relation-new').on('click', function(e){
-		
-		var s_id = son_current_select.attr('id').split('_');
-		var t_id = $(this).attr('id').split('_');
-		
-		$.post('',{
-			a:'new',
-			t:t_id[1],
-			s:s_id[1],
-			c:$('input:radio[name=c]:checked').val()
-		}, function(data, textStatus, jqXHR){
-			if(data.success)
-			{
-				init_relations();
-			}
-			else
-			{
-				alert('Failed');
-			}
-		});
-	});
-	
-	// delete relation
-	$('.item-relation-del').on('click', function(e){
-		
-		var s_id = son_current_select.attr('id').split('_');
-		var t_id = $(this).attr('id').split('_');
-		
-		$.post('',{
-			a:'del',
-			t:t_id[1],
-			s:s_id[1]
-		}, function(data, textStatus, jqXHR){
-			if(data.success)
-			{
-				init_relations();
-			}
-			else
-			{
-				alert('Failed');
-			}
-		});
-	});
+// 	$('.item-relation-new').on('click', function(e){
+// 		
+// 		var s_id = son_current_select.attr('id').split('_');
+// 		var t_id = $(this).attr('id').split('_');
+// 		
+// 		$.post('',{
+// 			a:'new',
+// 			t:t_id[1],
+// 			s:s_id[1],
+// 			c:$('input:radio[name=c]:checked').val()
+// 		}, function(data, textStatus, jqXHR){
+// 			if(data.success)
+// 			{
+// 				init_relations();
+// 			}
+// 			else
+// 			{
+// 				alert('Failed');
+// 			}
+// 		});
+// 	});
+// 	
+// 	// delete relation
+// 	$('.item-relation-del').on('click', function(e){
+// 		
+// 		var s_id = son_current_select.attr('id').split('_');
+// 		var t_id = $(this).attr('id').split('_');
+// 		
+// 		$.post('',{
+// 			a:'del',
+// 			t:t_id[1],
+// 			s:s_id[1]
+// 		}, function(data, textStatus, jqXHR){
+// 			if(data.success)
+// 			{
+// 				init_relations();
+// 			}
+// 			else
+// 			{
+// 				alert('Failed');
+// 			}
+// 		});
+// 	});
 });
 </script>
 </head>
 <body>
-	<form id="form-wrap" name="nf_" method="POST">
-	<input id="input-source" type="hidden" name="s" />
-	<input id="input-target" type="hidden" name="t" />
+	<div id="form-wrap">
 		<div>
 		{% for i in elems %}
 		<div id="item_{{i.id}}" class="item{% if not i.source.all %} no-rel{% endif %}">
@@ -253,8 +404,8 @@ $(document).ready(function(){
 			<img width="72" src="{{ i.image.drawing.url }}" />
 			<div class="item-label"><span class="item-id">{{i.id}}</span>   
 			
-			<span id="itemtargetnew_{{i.id}}" class="item-relation-new"></span>
-			<span id="itemtargetdel_{{i.id}}" class="item-relation-del"></span>
+			<!--<span id="itemtargetnew_{{i.id}}" class="item-relation-new"></span>
+			<span id="itemtargetdel_{{i.id}}" class="item-relation-del"></span>-->
 			
 			</div>
 			
@@ -264,15 +415,15 @@ $(document).ready(function(){
 		
 		
 		<!-- rel type -->
-		<div id="card-select">
+		<!--<div id="card-select">
 			{% for c in cards %}
 			<div class="card-select-iem"><input type="radio" name="c" value="{{ c.0 }}"/> {{ c.1 }}</div>
 			{% endfor %}
-		</div>
+		</div>-->
 		<!--<div>
 		<input type="submit" />
 		</div>-->
-	</form>
+	</div>
 	<div id="form-new"/>
 		<form name="nf_image" method="POST" enctype="multipart/form-data">
 			<input type="hidden" name="t" value="image" />
