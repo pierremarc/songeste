@@ -68,6 +68,22 @@
     box-shadow: none;
 }
 
+
+#composition-share{
+    cursor:pointer;
+    font-size:16pt;
+    text-align:center;
+    padding:6px 0;
+    box-shadow: 1px 1px 1px #766;
+    margin: 5px 0;
+    border: 1px solid #BBB;
+    background-color:#eee;
+}
+
+#composition-share:hover{
+    box-shadow: none;
+}
+
 #info-box{
 	position:absolute;
 	z-index:9999;
@@ -93,3 +109,81 @@
 .info-item:hover{
     box-shadow: 1px 1px 1px #766;
 }
+
+
+#share_widget{
+	position:relative;
+	top:12px;
+	margin:auto;
+	z-index:9999999;
+	padding:20px;
+	box-shadow: 1px 2px 2px #766;
+	background-color:#fff;
+	border:1px solid #888;
+	width:432px;
+	
+}
+
+#share_widget h4{
+    margin-top:36px;
+    font-size:28pt;
+}
+
+#share_close_widget{
+    position:absolute;
+    top:6px;
+    right:6px;
+    font-family:monospace;
+    font-size:8pt;
+    border:1px solid #888;
+    padding:4px 4px 2px 4px;
+    background-color:blue;
+    cursor:pointer;
+}
+
+#share_close_widget:hover{
+    color:#fff;
+}
+
+#share_input_name{
+    border:3px solid #eee;
+    width:100%;
+    margin:12px 0;
+    font-size:22pt;
+    font-family:sans-serif;
+    color:#666;
+}
+
+#share_submit_button{
+    position:relative;
+    width:46pt;
+    background-color:red;
+    text-align:center;
+    border:1px solid #888;
+    font-size:18pt;
+    padding:4px 4px 2px 4px;
+    margin:32px auto; 
+    cursor:pointer;
+}
+
+#share_submit_button:hover{
+    color:#fff;
+}
+
+.composition-link{
+	font-size:14pt;
+	text-align:center;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

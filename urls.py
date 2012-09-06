@@ -10,6 +10,9 @@ urlpatterns = patterns('',
     url(r'^new/(?P<name>\w+)/', 'mapo.views.new.handle'),
     url(r'^element/(?P<elem>\d+)/$', 'mapo.views.element.e'),
     url(r'^relations/(?P<elem>\d+)/$', 'mapo.views.element.rel'),
+    url(r'^compose/$', 'mapo.views.collection.save'),
+    url(r'^compositions/$', 'mapo.views.collection.c_all'),
+    url(r'^composition/(?P<composition>\d+)/$', 'mapo.views.collection.view'),
     url(r'^$/?', 'mapo.views.home.handle'),
     
 

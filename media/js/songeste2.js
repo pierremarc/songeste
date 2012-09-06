@@ -93,7 +93,7 @@ Son.Item = function(id, parent, relation)
         this.prepareSpiralSeries(.1, Math.max(jQuery(window).width() ,jQuery(window).height() ));
     
     var that = this;
-        jQuery.getJSON('element/'+id+'/',function(elem){
+        jQuery.getJSON('/element/'+id+'/',function(elem){
                 that._src = elem.src;
 //                 that._src_size = {width:elem.width, height:elem.height};
                 that._rect = new Son.Rect(0,0,elem.width, elem.height);
@@ -115,7 +115,7 @@ Son.Item.prototype.RelInv = {'R':'V', 'O':'B', 'J':'L', 'V':'R', 'B':'O', 'L':'J
 Son.Item.prototype.load = function()
 {
         var that = this;
-        jQuery.getJSON('relations/'+this.id+'/', function(relations)
+        jQuery.getJSON('/relations/'+this.id+'/', function(relations)
         {
                 for(var j = 0; j < relations.length; j++)
                 {
@@ -492,6 +492,34 @@ function son_init_jplayer()
 }
 
 
+function son_share_composition_widget(e)
+{
+	var widget = jQuery('<div id="share_widget" class="widget"><h4>Composition name</h4></div>');
+	var close = jQuery('<div id="share_close_widget"> close </div>');
+	var input = jQuery('<input id="share_input_name" type="text" />');
+	var submit = jQuery('<div id="share_submit_button">record</div>');
+	
+	close.on('click', function(){widget.remove();});
+	
+	jQuery('body').append(widget);
+	widget.append(close);
+	widget.append(input);
+	widget.append(submit);
+	submit.on('click', function(e){
+		var name = input.val();
+		var comp_a = [];
+		for(var i = 0; i < Son.composition_array.length; i++)
+		{
+			comp_a.push(Son.composition_array[i].id);
+		}
+		var comp = comp_a.join(',');
+		jQuery.post('/compose/', { n:name, c:comp }, function(data){
+			widget.append('<div class="composition-link">Link to your composition: <a href="'+data.url+'">'+input.val()+'</a></div>');
+			submit.remove();
+		}, 'json');
+	});
+}
+
 function son_update_composition(e)
 {
     var item = e.item;
@@ -503,8 +531,17 @@ function son_update_composition(e)
     if(Son.composition_box == undefined)
     {
         Son.composition_box = jQuery('<div id="composition-box" />');
+	Son.composition_list_box = jQuery('<div id="composition-list-box" />');
+	Son.composition_share_box = jQuery('<div id="composition-share-box" />');
+	Son.composition_share = jQuery('<div id="composition-share">share</div>');
+	
+	Son.composition_box.append(Son.composition_list_box);
+	Son.composition_share_box.append(Son.composition_share);
+	Son.composition_box.append(Son.composition_share_box);
         jQuery('body').append(Son.composition_box);
         Son.composition_array = new Array();
+	
+	Son.composition_share.on('click',  son_share_composition_widget);
     }
     for(var i = 0; i < Son.composition_array.length; i++)
     {
@@ -521,13 +558,13 @@ function son_update_composition(e)
         $(document).off($.jPlayer.event.ended);
     });
     ielem.append(iimg);
-    Son.composition_box.append(ielem);
+    Son.composition_list_box.append(ielem);
 }
 
 
 function son_start(id)
 {    
-    jQuery.getJSON('elements/',function(data){
+    jQuery.getJSON('/elements/',function(data){
             var d = data;
             var c = d.length;
             Son.RC = new Son.ElemCollection(c);

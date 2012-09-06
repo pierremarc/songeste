@@ -9,10 +9,7 @@ var son_player_image = undefined;
 var jplayerswf = '{{ MEDIA_URL }}js/jplayer/Jplayer.swf';
 
 {% if comp %}
-var son_composition = new Array();
-{% for c in comp %}
-son_composition.push({{c}});
-{% endfor %}
+var son_composition = new Array(); {% for c in comp %} son_composition.push({{c}}); {% endfor %}
 {% endif %}
 </script>
 
