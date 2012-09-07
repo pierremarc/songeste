@@ -1,13 +1,73 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"> 
+<!DOCTYPE html> 
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en"> 
 <head> 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>List of compositions</title>
+
+<style>
+
+@font-face{
+	font-family:reglo;
+	src:url('{{MEDIA_URL}}/reglo.ttf');
+}
+
+*{
+	margin:0;
+	padding:0;
+	border:none;
+	font-family:reglo;
+}
+
+#title{
+	font-size:32pt;
+	text-align:center;
+	line-height:44pt;
+}
+
+#title span{
+	border-bottom:1px solid black;
+}
+
+.composition{
+	text-align:center;
+	margin:22px 22px; 
+}
+
+.comp_title{
+	margin-top:16px;
+}
+
+.comp_title a{
+	font-size:16pt;
+	color:#666;
+}
+.comp_title a:hover{
+	color:#000;
+}
+.composition-item{
+	display:inline-block;
+	margin:3px;
+	
+   box-shadow: 1px 1px 1px #766;
+	border: 1px solid #BBB;
+}
+
+</style>
+
 </head>
 <body>
-<h1>compositions</h1>
+<div id="title"><span>compositions</span></div>
 {% for c in compositions %}
-	<div><a href="/composition/{{c.id}}/">{{c.name}}</a></div>
+<div class="composition">
+	<div class="comp_title"><a href="/composition/{{c.col.id}}/">{{c.col.name}}</a></div>
+	<div class="comp_images">
+	{% for i in c.images %}
+	<div class="composition-item">
+		<img src="{{i}}" width="32px" />
+	</div>
+	{% endfor %}
+	</div>
+</div>
 {% endfor %}
 </body>
 </html>

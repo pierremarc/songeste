@@ -22,7 +22,14 @@ def view(request, composition):
 def c_all(request):
 	r = []
 	for el in Collection.objects.all():
-		r.append(el)
+		clist = el.clist
+		if clist:
+			ids = clist.split(',')
+			images = []
+			for id in ids:
+				e = Element.objects.get(pk=id)
+				images.append(e.image.drawing.url)
+			r.append({'col':el, 'images':images})
 	return render_to_response("comp_list.html", {'compositions':r}, context_instance = RequestContext(request))
 	
 	
