@@ -56,7 +56,7 @@ div.selected div.item-label{
 	border-top:1px solid #999;
 }
 .item-id{
-	border-right:1px solid;
+/* 	border-right:1px solid; */
 }
 .no-rel{
 	border:1px solid #f99;
@@ -134,6 +134,7 @@ div.rel-selected div.item-label{
 </style>
 <script>
 var son_current_select = null;
+var son_current_select_endpoint = {};
 $(document).ready(function(){
 	window.Son = new Object();
 	var relations = new Object();
@@ -191,7 +192,7 @@ $(document).ready(function(){
 	// select
 	
 	var connections = [];
-	var updateConnections = function(conn, remove) {
+	function updateConnections(conn, remove) {
 		
 		var params = conn.getParameters();
 		var s_id = params.source;
@@ -210,7 +211,7 @@ $(document).ready(function(){
 			}, function(data, textStatus, jqXHR){
 				if(data.success)
 				{
-					console.log('SUCCESS => '+color+' '+s_id+' x '+t_id);
+// 					console.log('SUCCESS => '+color+' '+s_id+' x '+t_id);
 				}
 				else
 				{
@@ -244,27 +245,38 @@ $(document).ready(function(){
 		}
 	};				
 
-	jsPlumb.bind("connection", function(info, originalEvent) {
-		updateConnections(info.connection);
-	});
-	jsPlumb.bind("connectionDetached", function(info, originalEvent) {
-		updateConnections(info.connection, true);
-	});
+	function plumb_bind()
+	{
+		jsPlumb.bind("connection", function(info, originalEvent) {
+			updateConnections(info.connection);
+		});
+		jsPlumb.bind("connectionDetached", function(info, originalEvent) {
+			updateConnections(info.connection, true);
+		});
+	}
+	function plumb_unbind()
+	{
+		jsPlumb.unbind("connection");
+		jsPlumb.unbind("connectionDetached");
+	}
 	
 	$('.item > img').on('click', function(e){
 		var that = $(this).parent();
-		$('.item').removeClass('rel-selected');
+// 		$('.item').removeClass('rel-selected');
 		$('.media-control').hide();
-		$.each(cardinals, function(i,v){$('.item').removeClass(v);});
-		if(that.hasClass('selected'))
+// 		$.each(cardinals, function(i,v){$('.item').removeClass(v);});
+// 		if(that.hasClass('selected'))
+// 		{
+// 			that.removeClass('selected');
+// 		}
+// 		
 		{
-			that.removeClass('selected');
-		}
-		
-		{
+			son_current_select_endpoint = {};
 			$('.item').removeClass('selected');
 			that.addClass('selected');
+			plumb_unbind();
 			jsPlumb.deleteEveryEndpoint();
+			plumb_bind();
 			
 			var colors = 'ROJVBL';
 			var color_code = ['#FF2F2F', '#FF8000', '#FFFF00', '#00C000', '#00C0C0', '#C0C0FF'];
@@ -274,15 +286,21 @@ $(document).ready(function(){
 					isSource:true,
 					isTarget:false,
 					reattach:false,
-					scope:'songeste'
+					scope:'songeste',
+					maxConnections:22
 				};
 			for(var c in colors)
 			{
-				jsPlumb.addEndpoint(that,
+				var inv_color_idx = c - 3;
+				if(inv_color_idx < 0)
+					inv_color_idx = 6 + inv_color_idx;
+				son_current_select_endpoint[colors[c]] = jsPlumb.addEndpoint(that,
 					{
 						anchor:anchors[c],
 						paintStyle:{ width:12, height:12, fillStyle:color_code[c]},
-						connectorStyle : { lineWidth:5, strokeStyle:color_code[c] },
+						connectorStyle : { lineWidth:2, strokeStyle:'#fff',
+							gradient:{stops:[[0, color_code[inv_color_idx]], [0.2, color_code[c]], [1, color_code[c]]]},
+						},
 						parameters: {color:colors[c], source:that.attr('id').split('_').pop()}
 					}, default_params);
 				
@@ -292,7 +310,7 @@ $(document).ready(function(){
 			{
 				return true;
 			}
-			
+			var endpoints = {};
 			$('.item').each(function(idx, elem){
 // 				console.log('that: '+that.attr('id')+'  elem: '+$(elem).attr('id') + ' => ' + ($(elem).attr('id') == that.attr('id')));
 				if($(elem).attr('id') == that.attr('id'))
@@ -301,7 +319,8 @@ $(document).ready(function(){
 				}
 				else
 				{
-					jsPlumb.addEndpoint(elem,
+					var e_id = $(elem).attr('id').split('_').pop();
+					var ep = jsPlumb.addEndpoint(elem,
 					{
 						endpoint:["Dot", { radius:6 }],
 						isSource:false,
@@ -312,26 +331,29 @@ $(document).ready(function(){
 						anchor: "BottomCenter",
 						paintStyle: { fillStyle:'#bbb' },
 						parameters: {target:$(elem).attr('id').split('_').pop()},
-						scope:'songeste'
+						scope:'songeste',
+						maxConnections:22
 					});
+					endpoints[e_id] = ep;
 				}
 			});
 			
 			son_current_select = that;
 			
-			## TODO ##
-			$('.item').each(function(idx, el){
-				var id = $(el).attr('id');
-				jQuery.getJSON('/relations/'+id.split('_').pop()+'/', function(rels)
+			var id = that.attr('id');
+			
+			jQuery.getJSON('/relations/'+id.split('_').pop()+'/', function(rels)
+			{
+// 				console.log(rels);
+				plumb_unbind();
+				for(var i = 0; i < rels.length; i++)
 				{
-					relations[id] = rels;
-				});
-// 			$('.item-relation-new').text('[+]');
-// 			$('.item-relation-del').text('[-]');
-// 			for(var j = 0; j < relations[that.attr('id')].length; j++)
-// 			{
-// 				$('#item_'+relations[that.attr('id')][j].id).addClass('rel-selected').addClass(relations[that.attr('id')][j].cardinal);
-// 			}
+					connections.push( jsPlumb.connect({source:son_current_select_endpoint[rels[i].cardinal], target:endpoints[rels[i].id]}) );
+				}
+				plumb_bind();
+			});
+			
+			
 			var id = that.attr('id').split('_');
 			jQuery.getJSON('/element/'+id[1]+'/',function(elem){
 				if(elem.rec)

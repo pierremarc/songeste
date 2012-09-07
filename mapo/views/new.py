@@ -74,8 +74,9 @@ def relation(request):
 	elif a == 'del':
 		try:
 			source = Element.objects.get(pk=s)
-			r = source.source.get(target=t)
-			r.delete()
+			rels = source.source.filter(target=t)
+			for  r in rels:
+				r.delete()
 			source.save()
 			return HttpResponse(json.dumps({'success':'OK'}), mimetype='application/json')
 		except Exception as e:
