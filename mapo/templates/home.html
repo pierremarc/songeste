@@ -2,7 +2,7 @@
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en"> 
 <head> 
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
-<title>songeste</title>
+<title>lisongeste</title>
 <script>
 var son_placeholder = '{{ MEDIA_URL }}placeholder.png';
 var son_player_image = undefined;
@@ -16,9 +16,6 @@ var son_composition = new Array(); {% for c in comp %} son_composition.push({{c}
 <link rel="stylesheet" type="text/css" href="{{ MEDIA_URL }}son.css" />
 <script src="{{ MEDIA_URL }}js/jquery.js"></script>
 <script src="{{ MEDIA_URL }}js/jplayer/jquery.jplayer.js"></script>
-<!-- <script src="{{ MEDIA_URL }}js/paper.js"></script> -->
-<!--<script src="http://localhost/~pierre/paper.js/lib/prepro.js"></script>
-<script src="http://localhost/~pierre/paper.js/src/load.js"></script>-->
 
 <script src="{{ MEDIA_URL }}js/songeom.js"></script>
 <script src="{{ MEDIA_URL }}js/songeste2.js"></script>
@@ -36,9 +33,9 @@ var son_composition = new Array(); {% for c in comp %} son_composition.push({{c}
     </div>
     </div>
     <div id="info-box">
-    <span class="info-item"><a href="{{ MEDIA_URL }}info.html">about</a></span>
+    <span class="info-item"><a href="{{ MEDIA_URL }}info.html">le projet</a></span>
     <span class="info-item"><a href="{{ MEDIA_URL }}contact.html">contact</a></span>
-    <span class="info-item"><a href="{{ MEDIA_URL }}credit.html">credit</a></span>
+    <span class="info-item"><a href="{{ MEDIA_URL }}credit.html">crédits</a></span>
     </div>
 </body>
 </html>
