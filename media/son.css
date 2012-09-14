@@ -222,7 +222,13 @@ div.sub-section{
 /* 	margin-bottom:.4em; */
 }
 
+#nav-box{
+	display:none;
+}
 
+#composition-share-box{
+	display:none;
+}
 
 
 
