@@ -99,6 +99,7 @@
 
 .info-item{
 	font-family:reglo;
+	font-size:22pt;
 	 box-shadow: 1px 2px 2px #766;
     margin: 0 1px;
     padding:3px 5px;
@@ -109,7 +110,6 @@
 	font-family:reglo;
 	text-decoration:none;
 	color:#111;
-	font-size:13pt;
 }
 
 .info-item:hover{
