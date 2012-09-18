@@ -550,8 +550,8 @@ function son_update_composition(e)
     }
     Son.composition_array.push(item);
     var ielem = jQuery('<div class="composition-item" id="composition-item-'+Son.composition_array.length+'"></div>');
-    var iw = 32;
-    var ih = item._rect.height() * iw / item._rect.width();
+    var ih = 32;
+    var iw = item._rect.width() * ih / item._rect.height();
     var iimg = jQuery('<img src="'+item._src+'" width="'+iw+'" height="'+ih+'" />');
     ielem.on('click', function(){
         item.rootify(false);
