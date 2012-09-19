@@ -570,8 +570,8 @@ function son_start(id)
             Son.RC = new Son.ElemCollection(c);
             var ridx = id ;
             if(id == undefined)
-                ridx = Math.floor((Math.random()*c));
-            window.Son.RootElement = new Son.Item(d[ridx].id);
+                ridx = d[Math.floor((Math.random()*c))].id;
+            window.Son.RootElement = new Son.Item(ridx);
 	    
 	    window.Son.RootElement.show();
             son_update_composition({item:window.Son.RootElement});

@@ -67,7 +67,7 @@ def relation(request):
 		try:
 			r = Relation.objects.create(target=Element.objects.get(pk=t), source=Element.objects.get(pk=s), cardinal=c)
 			r.save()
-			r.reverse().save()
+			#r.reverse().save()
 			return HttpResponse(json.dumps({'success':'OK'}), mimetype='application/json')
 		except Exception as e:
 			error = '%s'%e 
@@ -76,6 +76,7 @@ def relation(request):
 			source = Element.objects.get(pk=s)
 			rels = source.source.filter(target=t)
 			for  r in rels:
+				#r.reverse().delete()
 				r.delete()
 			source.save()
 			return HttpResponse(json.dumps({'success':'OK'}), mimetype='application/json')

@@ -15,9 +15,11 @@ def e_all(request):
 			rel = {'type':el.etype, 'id':el.id}
 			tg = []
 			sel = el.source.all()
-			print(sel)
+			#print(sel)
 			for t in sel:
-				#print(dir(t.target.get()))
+				# we might want to insert elements wich are just a target in a relation
+				if len(t.target.source.all()) == 0:
+					r.append({'type':el.etype, 'id':t.target_id, 'target':[]})
 				tt = t
 				tg.append({'id':tt.target_id,'c':tt.cardinal})
 			rel['target'] = tg
