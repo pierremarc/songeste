@@ -4,8 +4,57 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <title>À propos de Lis Son Geste</title>
 <link rel="stylesheet" type="text/css" href="son.css" />
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.8.1/jquery.min.js"></script>
+<script>
+$(document).ready(function(){
+	var jw = $(window);
+	var tb = $('.text-body');
+	var su = $('.side-illu');
+	
+	
+	su.hide();
+	su.first().show();
+	
+	var cur_su = 0;
+	
+	var available = jw.width() - tb.width();
+	$('#side').width(.9 * available);
+	
+	jw.on('resize', function(){
+		var available = jw.width() - tb.width();
+		$('#side').width(.9 * available);
+	});
+	
+	jw.on('scroll', function(evt){
+		var step = tb.height() / su.length;
+		var idx = Math.floor(jw.scrollTop() / step);
+// 		console.log(jw.scrollTop() + ' ' +tb.height() + ' '+ (tb.height() / su.length) + ' ' + idx);
+		if(idx != cur_su)
+		{
+			var old_idx = cur_su;
+			cur_su = idx;
+			su.eq(old_idx).fadeOut('fast',function(){
+				su.eq(cur_su).fadeIn('slow');
+			}
+			);
+		}
+		
+		
+	});
+});
+</script>
+
 </head>
 <body>
+
+<div id="side">
+<img class="side-illu" src="montage1.jpg" />
+<img class="side-illu" src="montage2.jpg" />
+<img class="side-illu" src="montage3.jpg" />
+</div>
+
+
 <div class="text-body">
     <div id="title-box">
     Lis Son Geste

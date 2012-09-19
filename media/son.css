@@ -286,3 +286,14 @@ div.sub-section{
 	margin:24px 0;
 	
 }
+
+#side{
+	position:fixed;
+	top:32px;
+	right:32px;
+	width:500px;
+}
+
+.side-illu{
+	width:100%;
+}
