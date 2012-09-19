@@ -4,10 +4,15 @@
 	font-family:reglo;
 	src:url('reglo.ttf');
 }
-
 @font-face{
 	font-family:radley;
 	src:url('Radley-Italic.ttf');
+	font-style:italic;
+}
+@font-face{
+	font-family:radley;
+	src:url('Radley-Regular.ttf');
+	font-style:normal;
 }
 
 
@@ -132,6 +137,7 @@
 
 #info-subtitle{
 	font-family:radley;
+	font-style:italic;
 	position:absolute;
 	top:0;
 	left:500px;
@@ -232,7 +238,7 @@
 
 #title-box{
 	
-	font-family:sans-serif;
+	font-family:radley;
 	font-size:21pt;
 	margin-bottom:1em;
 }
@@ -246,7 +252,7 @@ div.section-title{
 
 
 div.par{
-	font-family:serif;
+	font-family:radley;
 	font-size:11pt;
 	margin:.4em 0;
 }
@@ -254,9 +260,13 @@ div.par{
 div.sub-section{
 /* 	padding-left:1em; */
 	text-indent:1em;
-	font-family:serif;
+	font-family:radley;
 	font-size:11pt;
-/* 	margin-bottom:.4em; */
+	margin-bottom:4px;
+}
+
+.em{
+	font-style:italic;
 }
 
 #nav-box{
@@ -269,5 +279,10 @@ div.sub-section{
 
 
 .logo{
-	width:72px;
+	width:160px;
+}
+
+.illu{
+	margin:24px 0;
+	
 }
