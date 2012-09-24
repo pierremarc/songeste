@@ -259,7 +259,7 @@ Son.Item.prototype.layout = function(with_children)
     var w = jQuery(window);
     var wh = w.height();
     var ww = w.width();
-    var winrect = new Son.Rect(0,0,ww,wh);
+    var winrect = new Son.Rect(0,66,ww,wh - 66);
     console.log('L '+this.id);
     if(this.parent)
     {
