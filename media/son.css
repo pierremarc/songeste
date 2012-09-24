@@ -111,9 +111,13 @@
 	top: 3px;
 	left: 0;
 	width: 100%;
-	height: 89px;
+	height: 72px;
 	border-bottom: 1px solid #ccc;
 	background-color: #fff;
+}
+
+#info-box img{
+	height:66px;
 }
 
 .info-item{
@@ -141,8 +145,8 @@
 	position:absolute;
 	top:0;
 	left:500px;
-	font-size: 15.5pt;
-	line-height: 17.5pt;
+	font-size: 13.5pt;
+	line-height: 16pt;
 	width:620px;
 }
 
