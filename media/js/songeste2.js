@@ -271,7 +271,7 @@ Son.Item.prototype.layout = function(with_children)
             window.setTimeout(function(){that.layout(with_children);}, 500);
             return;
         }
-        var scale = 1/(this.level());
+        var scale = 1/(this.level() * 0.8);
         
         // we start with parent position
         var trect = new Son.Rect(
@@ -300,8 +300,8 @@ Son.Item.prototype.layout = function(with_children)
 //                 jQuery('body').append('<img src="'+dbg_pixel[this.relation]
 //             +'" style="width:2px;height:2px;position:absolute;z-index:1000;top:'+trect.top()+'px;left:'+trect.left()+'px" />');
            
-            if(!winrect.includes(trect))
-            {
+        //    if(!winrect.includes(trect))
+            if(1){
                 if(trect.left() < winrect.left())
                     trect._x += winrect.left() - trect.left();
                 else if(trect.right() > winrect.right())
@@ -312,7 +312,7 @@ Son.Item.prototype.layout = function(with_children)
                 else if(trect.bottom() > winrect.bottom())
                     trect._y -= trect.bottom() - winrect.bottom();
                 
-                break;
+        //        break;
             }
            if(!Son.RC.intersects(trect, this.id) )
             {
