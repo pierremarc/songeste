@@ -69,6 +69,10 @@
 	padding:3px;
 /*     border: 1px solid #111; */
 }
+#composition-box div{
+    display:inline-block;
+    vertical-align: bottom;
+}
 
 #composition-list-box{
 	
@@ -94,26 +98,25 @@
     cursor:pointer;
     font-size:16pt;
     text-align:center;
-    padding:6px 0;
+    padding:6px 6px;
     box-shadow: 1px 1px 1px #766;
-    margin: 5px 0;
+    margin: 0 5px;
     border: 1px solid #BBB;
     background-color:#eee;
+    line-height: 23px;
 }
 
 #composition-share:hover{
     box-shadow: none;
 }
 
-#info-box{
-	position:absolute;
-	z-index:9999;
-	top: 3px;
-	left: 0;
-	width: 100%;
-	height: 72px;
-	border-bottom: 1px solid #ccc;
-	background-color: #fff;
+#info-box {
+    position: absolute;
+    z-index: 9999;
+    top: 10px;
+    left: 10px;
+    width: 468px;
+    background-color: #FAFAFA;
 }
 
 #info-box img{
@@ -139,15 +142,13 @@
 	font-style:italic;
 }*/
 
-#info-subtitle{
-	font-family:radley;
-	font-style:italic;
-	position:absolute;
-	top:0;
-	left:500px;
-	font-size: 13.5pt;
-	line-height: 16pt;
-	width:620px;
+#info-subtitle {
+    font-family: radley;
+    font-style: italic;
+    top: 0;
+    font-size: 13.5pt;
+    line-height: 16pt;
+    padding: 0 14px 14px 14px;
 }
 
 .info-descurl{
@@ -165,7 +166,7 @@
 
 
 #share_widget{
-	font-family:reglo;
+    font-family:sans-serif;
 	position:relative;
 	top:12px;
 	margin:auto;
@@ -179,13 +180,13 @@
 }
 
 #share_widget h4{
-	font-family:reglo;
+    font-family:sans-serif;
     margin-top:36px;
-    font-size:28pt;
+    font-size:24pt;
 }
 
 #share_close_widget{
-	font-family:reglo;
+    font-family:sans-serif;
     position:absolute;
     top:6px;
     right:6px;
@@ -193,17 +194,17 @@
     font-size:8pt;
     border:1px solid #888;
     padding:4px 4px 2px 4px;
-    background-color:blue;
+    background-color:#44BBFF;
     cursor:pointer;
+    font-weight:bold;
 }
 
 #share_close_widget:hover{
-	font-family:reglo;
     color:#fff;
 }
 
 #share_input_name{
-	font-family:reglo;
+    font-family:sans-serif;
     border:3px solid #eee;
     width:100%;
     margin:12px 0;
@@ -213,9 +214,11 @@
 }
 
 #share_submit_button{
-	font-family:reglo;
+	font-family:sans-serif;
     position:relative;
-    width:46pt;
+/*     width:46pt; */
+    margin:auto;
+    width:50%;
     background-color:red;
     text-align:center;
     border:1px solid #888;
@@ -230,7 +233,7 @@
 }
 
 .composition-link{
-	font-family:reglo;
+    font-family:sans-serif;
 	font-size:14pt;
 	text-align:center;
 }
@@ -278,7 +281,7 @@ div.sub-section{
 }
 
 #composition-share-box{
-	display:none;
+/* 	display:none; */
 }
 
 

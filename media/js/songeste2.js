@@ -494,10 +494,10 @@ function son_init_jplayer()
 
 function son_share_composition_widget(e)
 {
-	var widget = jQuery('<div id="share_widget" class="widget"><h4>Composition name</h4></div>');
-	var close = jQuery('<div id="share_close_widget"> close </div>');
+	var widget = jQuery('<div id="share_widget" class="widget"><h4>Nom de cette composition</h4></div>');
+	var close = jQuery('<div id="share_close_widget"> fermer </div>');
 	var input = jQuery('<input id="share_input_name" type="text" />');
-	var submit = jQuery('<div id="share_submit_button">record</div>');
+	var submit = jQuery('<div id="share_submit_button">enregistrer</div>');
 	
 	close.on('click', function(){widget.remove();});
 	
@@ -513,8 +513,8 @@ function son_share_composition_widget(e)
 			comp_a.push(Son.composition_array[i].id);
 		}
 		var comp = comp_a.join(',');
-		jQuery.post('/compose/', { n:name, c:comp }, function(data){
-			widget.append('<div class="composition-link">Link to your composition: <a href="'+data.url+'">'+input.val()+'</a></div>');
+        jQuery.post('/compose/', { n:name, c:comp }, function(data){
+            widget.append('<div class="composition-link">Lien vers cette composition: <a href="'+data.url+'">'+input.val()+'</a></div>');
 			submit.remove();
 		}, 'json');
 	});
@@ -533,7 +533,7 @@ function son_update_composition(e)
         Son.composition_box = jQuery('<div id="composition-box" />');
 	Son.composition_list_box = jQuery('<div id="composition-list-box" />');
 	Son.composition_share_box = jQuery('<div id="composition-share-box" />');
-	Son.composition_share = jQuery('<div id="composition-share">share</div>');
+	Son.composition_share = jQuery('<div id="composition-share">sauvegarder</div>');
 	
 	Son.composition_box.append(Son.composition_list_box);
 	Son.composition_share_box.append(Son.composition_share);
