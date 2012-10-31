@@ -21,6 +21,13 @@ var son_composition = new Array(); {% for c in comp %} son_composition.push({{c}
 <script src="{{ MEDIA_URL }}js/songeom.js"></script>
 <script src="{{ MEDIA_URL }}js/songeste2.js"></script>
 
+<script>
+$(document).ready(function(){
+    $('#hidder').on('click', function(evt){
+        $('#info-box').hide();
+        });
+    });
+</script>
 
 
 </head>
@@ -43,6 +50,7 @@ var son_composition = new Array(); {% for c in comp %} son_composition.push({{c}
     </div>
 <!--     <span class="info-item"><a href="{{ MEDIA_URL }}contact.html">contact</a></span> -->
 <!--     <span class="info-item"><a href="{{ MEDIA_URL }}credit.html">credits</a></span> -->
+<div id="hidder" style="position:absolute;top:3px;right:3px;cursor:pointer"> × </div>
     </div>
 </body>
 </html>
